@@ -10,7 +10,7 @@ The library is designed mainly thinking about integration tests. (Testing if fun
 
 For example usage look [here](https://github.com/RedouxG/SGT/tree/main/Examples).
 
-You can also easily add your own assertions and test methods easily. Any library or method that throws an exception will be caught by [Runner](https://github.com/RedouxG/SGT/blob/main/addons/SGT/Core/Runner.cs).
+You can also easily add your own assertions and test methods. Any library or method that throws an exception will be caught by [Runner](https://github.com/RedouxG/SGT/blob/main/addons/SGT/Core/Runner.cs).
 
 How to use
 -----
