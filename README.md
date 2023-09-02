@@ -44,6 +44,18 @@ public class ExampleAssertionTest
 }
 ```
 
+Testing class can be in any `.cs` file in your project, I would recommend putting all tests in a test folder so its easier to exclude the testing files in your `.csproj` file from the compiled game like so:
+
+```xml
+<PropertyGroup>
+  <DefaultItemExcludes Condition="'$(Configuration)' == 'ExportRelease'">
+    $(DefaultItemExcludes);YourTestFoldername/**
+  </DefaultItemExcludes>
+</PropertyGroup>
+```
+
+Also the tests are ran by namespace so you can manually run only one namespace at a time if you want.
+
 For the time being test output is being shown in the console, I'm planning to integrate it in some prettier way, probably something resembling GUT.
 
 Mocking
@@ -52,7 +64,9 @@ Mocking
 The library works well with [Moq](https://github.com/moq/moq) as far as I have tested. You can use mocks in all test methods without issue.
 
 You can easily add Moq to your project using:
-> `dotnet add package Moq --version <LATEST VERSION>`
+```
+dotnet add package Moq --version <LATEST VERSION>
+```
 
 
 Dev info
