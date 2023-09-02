@@ -76,3 +76,8 @@ Everything is as Godot/IDE agnostic as possible to minigate all of compatibility
 
 I would recommend to use this testing library along with [GUT](https://github.com/bitwes/Gut), Godot nodes have a lot of issues with mocking in C# so if you want to mock something its best to do it in GUT for the time being.
 
+TODO:
+- Add before/after each attribute along with the usually used test attributes in other testing libs
+- Add some visually pleasing output of the tests to the runner node
+- Add plugin integration so the tests can be ran from a Godot IDE tab
+
