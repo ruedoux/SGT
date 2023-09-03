@@ -4,6 +4,22 @@ namespace SGT;
 
 public static class Assertions
 {
+  public static void AssertTrue(bool shoudlBeTrue)
+  {
+    if (!shoudlBeTrue)
+    {
+      throw new AssertionException($"Value is false, but expected true.");
+    }
+  }
+
+  public static void AssertFalse(bool shoudlBeFalse)
+  {
+    if (shoudlBeFalse)
+    {
+      throw new AssertionException($"Value is true, but expected false.");
+    }
+  }
+
   public static void AssertEqual(object shouldBe, object isNow)
   {
     if (!Equals(shouldBe, isNow))

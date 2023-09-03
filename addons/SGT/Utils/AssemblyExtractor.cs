@@ -42,7 +42,11 @@ public static class AssemblyExtractor
 
     foreach (var type in types)
     {
-      allNamespaces.Add(GetTypeNamespaceName(type));
+      var namespaceName = GetTypeNamespaceName(type);
+      if (!allNamespaces.Contains(namespaceName))
+      {
+        allNamespaces.Add(namespaceName);
+      }
     }
 
     return allNamespaces;

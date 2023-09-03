@@ -8,7 +8,7 @@
     
     GUT: https://github.com/bitwes/Gut
 */
-
+namespace PassingTests;
 using Moq;
 using SGT;
 

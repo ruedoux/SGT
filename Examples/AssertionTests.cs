@@ -1,11 +1,38 @@
+// Testing a testing framework with the same testing framework for testing
+namespace PassingTests;
 using System;
 using SGT;
 
-namespace PassingTests;
 
 [SimpleTestClass]
-public class ExampleAssertionTest
+public class AssertionTest
 {
+
+  [SimpleTestMethod]
+  public void TestAssertTrue()
+  {
+    // Pass case
+    Assertions.AssertTrue(true);
+
+    // Fail case
+    Assertions.AssertThrows<AssertionException>(() =>
+    {
+      Assertions.AssertTrue(false);
+    });
+  }
+
+  [SimpleTestMethod]
+  public void TestAssertFalse()
+  {
+    // Pass case
+    Assertions.AssertFalse(false);
+
+    // Fail case
+    Assertions.AssertThrows<AssertionException>(() =>
+    {
+      Assertions.AssertFalse(true);
+    });
+  }
 
   [SimpleTestMethod]
   public void TestAssertEqual()

@@ -1,6 +1,5 @@
-using System;
-
 namespace SGT;
+using System;
 
 public class AssertionException : Exception
 {

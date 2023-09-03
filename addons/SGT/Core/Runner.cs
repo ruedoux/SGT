@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -12,6 +13,8 @@ public static class Runner
   public static bool RunAllTests()
   {
     bool testsPassed = true;
+    Stopwatch stopwatch = new();
+    stopwatch.Start();
 
     Logger.Log("> Starting Tests");
     Logger.IncreaseIndentation();
@@ -20,7 +23,8 @@ public static class Runner
       testsPassed = testsPassed && RunTestsInNamespace(namespaceName);
     }
     Logger.DecreaseIndentation();
-    Logger.Log("> Finishing Tests");
+    stopwatch.Stop();
+    Logger.Log($"> Finishing Tests | took: {stopwatch.ElapsedMilliseconds}ms");
 
     return testsPassed;
   }
@@ -29,39 +33,56 @@ public static class Runner
   {
     bool testsPassed = true;
     var testObjects = AssemblyExtractor.GetTestObjectsInNamespace(namespaceName);
+    Stopwatch stopwatch = new();
+    stopwatch.Start();
 
-    Logger.Log($"> Begin tests for namespace: " + namespaceName);
+    Logger.Log($"> Begin tests for namespace: {namespaceName}");
     Logger.IncreaseIndentation();
     foreach (var instance in testObjects)
     {
       testsPassed = testsPassed && RunAllTestsInObject(instance);
     }
     Logger.DecreaseIndentation();
-    Logger.Log("> End tests for namespace: " + namespaceName);
+    stopwatch.Stop();
+    Logger.Log($"> End tests for namespace: {namespaceName} | took: {stopwatch.ElapsedMilliseconds}ms");
 
     return testsPassed;
   }
 
   private static bool RunAllTestsInObject(object objectToRun)
   {
-    var methods = objectToRun.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
     bool testsPassed = true;
+    var methods = GetMethodsFromObject(objectToRun);
+
+    var simpleTestMethods =
+      MethodClassifier.GetAllAttributeMethods<SimpleTestMethod>(methods);
+    var beforeEachMethod =
+      MethodClassifier.GetSingleAttributeMethod<SimpleBeforeEach>(methods, objectToRun);
+    var afterEachMethod =
+      MethodClassifier.GetSingleAttributeMethod<SimpleAfterEach>(methods, objectToRun);
+
+    Stopwatch stopwatch = new();
+    stopwatch.Start();
 
     Logger.Log($"> Running: {objectToRun.GetType().Name}");
-    foreach (var method in methods)
+    foreach (var method in simpleTestMethods)
     {
-      if (!Attribute.IsDefined(method, typeof(SimpleTestMethod)))
-      {
-        continue;
-      }
-      bool result = Task.Run(() => RunTest(method, objectToRun)).Result;
-      testsPassed = testsPassed && result;
+      testsPassed = testsPassed && Task.Run(() =>
+        RunHelperMethod(beforeEachMethod, objectToRun, typeof(SimpleBeforeEach))).Result;
+      testsPassed = testsPassed && Task.Run(() =>
+        RunTestMethod(method, objectToRun)).Result;
+      testsPassed = testsPassed && Task.Run(() =>
+        RunHelperMethod(afterEachMethod, objectToRun, typeof(SimpleAfterEach))).Result;
     }
-    Logger.Log(GetTestResultString(testsPassed) + objectToRun.GetType().Name);
+    stopwatch.Start();
+    Logger.Log($"> {GetTestResultString(testsPassed)} {objectToRun.GetType().Name} | took: {stopwatch.ElapsedMilliseconds}ms");
+
     return testsPassed;
   }
 
-  private static async Task<bool> RunTest(MethodInfo methodInfo, object objectToRun)
+
+  private static async Task<bool> RunTestMethod(
+    MethodInfo methodInfo, object objectToRun)
   {
     Stopwatch stopwatch = new();
     stopwatch.Start();
@@ -70,43 +91,57 @@ public static class Runner
     try
     {
       await testTask.WaitAsync(TimeSpan.FromMilliseconds(timeoutMs));
-      LogSuccess(methodInfo.Name, stopwatch.ElapsedMilliseconds);
+      Logger.Log($"[TEST PASS] {methodInfo.Name} | took: {stopwatch.ElapsedMilliseconds}ms");
       return true;
     }
     catch (TimeoutException)
     {
-      LogTimeout(methodInfo.Name);
+      Logger.Log($"[TEST TIMEOUT] {methodInfo.Name} | Timeout reached: {timeoutMs}ms");
     }
     catch (Exception ex)
     {
-      LogFail(methodInfo.Name, ex, stopwatch.ElapsedMilliseconds);
+      Logger.Log($"[TEST FAIL] {methodInfo.Name} | took: {stopwatch.ElapsedMilliseconds}ms");
+      Logger.Log($"{ex.InnerException}\n");
     }
 
     return false;
   }
 
-  private static void LogSuccess(string methodName, long timeMs)
+  private static async Task<bool> RunHelperMethod(
+    MethodInfo methodInfo, object objectToRun, Type methodType)
   {
-    Logger.Log($"[TEST PASS] {methodName} {timeMs}ms");
+    if (methodInfo == null) // Helper methods are not mandatory
+    {
+      return true;
+    }
+
+    var testTask = Task.Run(() => methodInfo.Invoke(objectToRun, null));
+    try
+    {
+      await testTask.WaitAsync(TimeSpan.FromMilliseconds(timeoutMs));
+      return true;
+    }
+    catch (TimeoutException)
+    {
+      Logger.Log($"[HELPER METHOD TIMEOUT] {methodInfo.Name} of type {methodType.FullName} | Timeout reached: {timeoutMs}ms");
+    }
+    catch (Exception ex)
+    {
+      Logger.Log($"[HELPER METHOD FAIL] {methodInfo.Name} of type {methodType.FullName}");
+      Logger.Log($"{ex.InnerException}\n");
+
+    }
+
+    return false;
   }
 
-  private static void LogFail(string methodName, Exception ex, long timeMs)
+  private static MethodInfo[] GetMethodsFromObject(object testObject)
   {
-    Logger.Log($"[TEST FAIL] {methodName} {timeMs}ms");
-    Logger.Log($"{ex.InnerException}\n");
-  }
-
-  private static void LogTimeout(string methodName)
-  {
-    Logger.Log($"[TEST TIMEOUT] {methodName} | Timeout reached: {timeoutMs}ms");
+    return testObject.GetType().GetMethods(
+      BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
   }
 
   private static string GetTestResultString(bool result)
-  {
-    if (result)
-    {
-      return "> PASSED ";
-    }
-    return "> FAILED ";
-  }
+    => result ? "{PASSED}" : "{FAILED}";
+
 }
