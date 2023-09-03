@@ -6,7 +6,17 @@ using System;
 public class SimpleTestClass : Attribute { }
 
 [AttributeUsage(AttributeTargets.Method)]
-public class SimpleTestMethod : Attribute { }
+public class SimpleTestMethod : Attribute
+{
+  public readonly uint repeatTest = 1;
+
+  public SimpleTestMethod() { }
+
+  public SimpleTestMethod(uint repeatTest)
+  {
+    this.repeatTest = repeatTest;
+  }
+}
 
 [AttributeUsage(AttributeTargets.Method)]
 public class SimpleBeforeEach : Attribute { }

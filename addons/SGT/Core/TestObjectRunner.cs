@@ -35,9 +35,7 @@ public class TestObjectRunner
     UpdateTestStatus(RunHelperMethod<SimpleBeforeAll>());
     foreach (var method in simpleTestMethods)
     {
-      UpdateTestStatus(RunHelperMethod<SimpleBeforeEach>());
-      UpdateTestStatus(RunTestMethod(method));
-      UpdateTestStatus(RunHelperMethod<SimpleAfterEach>());
+      RunSingleTestMethodCase(method);
     }
     UpdateTestStatus(RunHelperMethod<SimpleAfterAll>());
     Logger.AnnounceBlockEnd($"> {MessageTemplates.GetTestResultString(testPassed)} {testedObject.GetType().Name} | took: {stopwatch.ElapsedMilliseconds}ms");
@@ -45,10 +43,21 @@ public class TestObjectRunner
     return testPassed;
   }
 
-  public bool RunTestMethod(MethodInfo methodInfo) => Task.Run(() =>
+  private void RunSingleTestMethodCase(MethodInfo method)
+  {
+    uint repeatTest = method.GetCustomAttribute<SimpleTestMethod>().repeatTest;
+    for (uint i = 0; i < repeatTest; i++)
+    {
+      UpdateTestStatus(RunHelperMethod<SimpleBeforeEach>());
+      UpdateTestStatus(RunTestMethod(method));
+      UpdateTestStatus(RunHelperMethod<SimpleAfterEach>());
+    }
+  }
+
+  private bool RunTestMethod(MethodInfo methodInfo) => Task.Run(() =>
     RunAsyncMethod(methodInfo, true)).Result;
 
-  public bool RunHelperMethod<T>() where T : Attribute => Task.Run(() =>
+  private bool RunHelperMethod<T>() where T : Attribute => Task.Run(() =>
     RunAsyncMethod(MethodClassifier.GetSingleAttributeMethod<T>(
       methods, testedObject), false)).Result;
 

@@ -11,7 +11,7 @@ I would recommend to use this testing addon along with [GUT](https://github.com/
 How to use
 -----
 
-Add `[SimpleTestClass]` attribute to your testing class and `[SimpleTestMethod]` attribute to methods in the test class you want to be tested.
+Add `[SimpleTestClass]` attribute to your testing class and `[SimpleTestMethod]` attribute to test methods.
 
 Run `EdditorRunner.tscn` provided in `addons/SGT`. Thats it, no additional setup is needed for it to work.
 

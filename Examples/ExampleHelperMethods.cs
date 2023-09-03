@@ -20,29 +20,16 @@ public class ExampleHelperMethods
     shouldBeFalse = false;
   }
 
-  [SimpleTestMethod]
-  public void TestBeforeEach1()
+  [SimpleTestMethod(repeatTest: 2)]
+  public void TestBeforeEach()
   {
     shouldBeZero++;
     Assertions.AssertEqual(shouldBeZero, 1);
   }
 
-  [SimpleTestMethod]
-  public void TestBeforeEach2()
-  {
-    shouldBeZero++;
-    Assertions.AssertEqual(shouldBeZero, 1);
-  }
 
-  [SimpleTestMethod]
-  public void TestAfterEach1()
-  {
-    Assertions.AssertFalse(shouldBeFalse);
-    shouldBeFalse = true;
-  }
-
-  [SimpleTestMethod]
-  public void TestAfterEach2()
+  [SimpleTestMethod(repeatTest: 2)]
+  public void TestAfterEach()
   {
     Assertions.AssertFalse(shouldBeFalse);
     shouldBeFalse = true;
