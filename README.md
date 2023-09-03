@@ -21,6 +21,17 @@ Example test class would look something like this:
 [SimpleTestClass]
 public class ExampleAssertionTest
 {
+  [SimpleBefreEach]
+  public void BeforeEach()
+  {
+    // Setup
+  }
+
+  [SimpleBefreEach]
+  public void AfterEach()
+  {
+    // Clean
+  }
 
   [SimpleTestMethod]
   public void SomeTestCase()
@@ -36,7 +47,6 @@ public class ExampleAssertionTest
     // Then
     Assertions.AssertEqual(expectedResult, result);
   }
-
 }
 ```
 
