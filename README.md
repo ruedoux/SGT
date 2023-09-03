@@ -4,13 +4,9 @@ Simple Godot Tests
 About
 -----
 
-Addon / Library for [Godot](https://github.com/godotengine/godot) that lets you create tests for your C# scripts. Its designed to be as simple to use as possible and have as little dependency issues with different Godot versions.
+Addon for [Godot](https://github.com/godotengine/godot) that allows you to easily create tests for your C# scripts. Its designed to be as simple to use as possible and have as little dependency issues with different Godot versions.
 
-The library is designed mainly thinking about integration tests. (Testing if function x for class y does what you want it to do after providing z)
-
-For example usage look [here](https://github.com/RedouxG/SGT/tree/main/Examples).
-
-You can also easily add your own assertions and test methods. Any library or method that throws an exception will be caught by [Runner](https://github.com/RedouxG/SGT/blob/main/addons/SGT/Core/Runner.cs).
+I would recommend to use this testing addon along with [GUT](https://github.com/bitwes/Gut), Godot nodes have a lot of issues with mocking in C# so if you want to mock something its best to do it in GUT for the time being.
 
 How to use
 -----
@@ -63,7 +59,7 @@ Mocking
 
 The library works well with [Moq](https://github.com/moq/moq) as far as I have tested. You can use mocks in all test methods without issue.
 
-You can easily add Moq to your project using:
+You can add Moq to your project using:
 ```
 dotnet add package Moq --version <LATEST VERSION>
 ```
@@ -74,10 +70,7 @@ Dev info
 
 Everything is as Godot/IDE agnostic as possible to minigate all of compatibility issues that other plugins tend to have. The only interface entry points with Godot are Logger and EditorRunner classes.
 
-I would recommend to use this testing library along with [GUT](https://github.com/bitwes/Gut), Godot nodes have a lot of issues with mocking in C# so if you want to mock something its best to do it in GUT for the time being.
-
 TODO:
-- Add before/after each attribute along with the usually used test attributes in other testing libs
 - Add some visually pleasing output of the tests to the runner node
 - Add plugin integration so the tests can be ran from a Godot IDE tab
 
