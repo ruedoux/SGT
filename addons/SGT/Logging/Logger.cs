@@ -1,7 +1,6 @@
-using Godot;
-using System;
-
 namespace SGT;
+using Godot;
+
 
 public static class Logger
 {
@@ -12,9 +11,9 @@ public static class Logger
     ERROR
   }
 
-  private const String ERROR_MARKER = "[ERROR] ";
-  private const String WARNING_MARKER = "[WARN] ";
-  private const String INFO_MARKER = "[INFO] ";
+  private const string ERROR_MARKER = "[ERROR] ";
+  private const string WARNING_MARKER = "[WARN] ";
+  private const string INFO_MARKER = "[INFO] ";
 
   public static bool supressError = false;
   public static bool supressWarning = false;
@@ -40,6 +39,18 @@ public static class Logger
     ForwardLog(WARNING_MARKER, MESSAGE_TYPE.WARN, msgs);
   }
 
+  public static void AnnounceBlockStart(string announcment)
+  {
+    Log(announcment);
+    IncreaseIndentation();
+  }
+
+  public static void AnnounceBlockEnd(string announcment)
+  {
+    DecreaseIndentation();
+    Log(announcment);
+  }
+
   public static void IncreaseIndentation()
   {
     indentationTabs += 1;
@@ -56,7 +67,7 @@ public static class Logger
   }
 
   private static void ForwardLog(
-    String marker, MESSAGE_TYPE messageType, params object[] msgs)
+    string marker, MESSAGE_TYPE messageType, params object[] msgs)
   {
     LogToConsole(marker, msgs);
     if ((messageType == MESSAGE_TYPE.WARN) && !supressWarning)
@@ -69,7 +80,7 @@ public static class Logger
     }
   }
 
-  private static void LogToConsole(String marker, params object[] msgs)
+  private static void LogToConsole(string marker, params object[] msgs)
   {
     string output = marker;
 

@@ -1,6 +1,6 @@
+namespace SGT;
 using System;
 
-namespace SGT;
 
 public static class Assertions
 {
