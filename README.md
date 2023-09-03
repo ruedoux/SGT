@@ -11,7 +11,9 @@ I would recommend to use this testing addon along with [GUT](https://github.com/
 How to use
 -----
 
-<span style="color:red">Disclaimer:</span> Everything for this repo on visual side is done for 4.1.1 (latest) version. If you want to use this addon for older versions some minor setup could be needed (look end of readme).
+
+**Disclaimer**:
+*Everything for this repo on visual side is done for 4.1.1 (latest) version. If you want to use this addon for older versions some minor setup could be needed (look end of readme).*
 
 Add `[SimpleTestClass]` attribute to your testing class and `[SimpleTestMethod]` attribute to test methods.
 
@@ -52,17 +54,7 @@ public class ExampleAssertionTest
 }
 ```
 
-Testing class can be in any `.cs` file in your project, I would recommend putting all tests in a test folder so its easier to exclude the testing files in your `.csproj` file from the compiled game like so:
-
-```xml
-<PropertyGroup>
-  <DefaultItemExcludes Condition="'$(Configuration)' == 'ExportRelease'">
-    $(DefaultItemExcludes);YourTestFoldername/**
-  </DefaultItemExcludes>
-</PropertyGroup>
-```
-
-Also the tests are ran by namespace so you can manually run only one namespace at a time if you want.
+Tests are ran by namespace so you can manually run only one namespace at a time if you want.
 
 For the time being test output is being shown in the console, I'm planning to integrate it in some prettier way, probably something resembling GUT.
 
@@ -81,6 +73,16 @@ Dev info
 -----
 
 Everything is as Godot/IDE agnostic as possible to minigate all of compatibility issues that other plugins tend to have. The only interface entry points with Godot are Logger and EditorRunner classes.
+
+Testing class can be in any `.cs` file in your project, I would recommend putting all tests in a test folder so its easier to exclude the testing files in your `.csproj` file from the realase version of the game:
+
+```xml
+<PropertyGroup>
+  <DefaultItemExcludes Condition="'$(Configuration)' == 'ExportRelease'">
+    $(DefaultItemExcludes);YourTestFolderName/**
+  </DefaultItemExcludes>
+</PropertyGroup>
+```
 
 For older versions of godot
  `EdditorRunner.tscn` can be simply deleted because it only serves as an entry point and a pretty way to show test results, all functions that actually start the tests are in [Runner.cs](https://github.com/RedouxG/SGT/blob/main/addons/SGT/Core/Runner.cs). So if you  really want to you can use this addon with minimal effort of setup in any other godot version.
