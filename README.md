@@ -21,13 +21,13 @@ Example test class would look something like this:
 [SimpleTestClass]
 public class ExampleAssertionTest
 {
-  [SimpleBefreEach]
+  [SimpleBeforeEach]
   public void BeforeEach()
   {
     // Setup
   }
 
-  [SimpleBefreEach]
+  [SimpleAfterEach]
   public void AfterEach()
   {
     // Clean
