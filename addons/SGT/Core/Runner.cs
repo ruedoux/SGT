@@ -19,7 +19,7 @@ public static class Runner
     {
       testsPassed = testsPassed && RunTestsInNamespace(namespaceName);
     }
-    Logger.AnnounceBlockEnd($"> Finishing Tests | took: {stopwatch.ElapsedMilliseconds}ms");
+    Logger.AnnounceBlockEnd($"> {MessageTemplates.GetTestResultString(testsPassed)} Finishing Tests | took: {stopwatch.ElapsedMilliseconds}ms");
 
     return testsPassed;
   }
@@ -36,7 +36,7 @@ public static class Runner
       testsPassed = testsPassed &&
         new TestObjectRunner(instance, timeoutMs).RunAllTestsInObject();
     }
-    Logger.AnnounceBlockEnd($"> End tests for namespace: {namespaceName} | took: {stopwatch.ElapsedMilliseconds}ms");
+    Logger.AnnounceBlockEnd($"> {MessageTemplates.GetTestResultString(testsPassed)} End tests for namespace: {namespaceName} | took: {stopwatch.ElapsedMilliseconds}ms");
 
     return testsPassed;
   }
