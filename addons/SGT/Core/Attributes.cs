@@ -1,6 +1,6 @@
 namespace SGT;
 using System;
-
+using Godot;
 
 [AttributeUsage(AttributeTargets.Class)]
 internal class SimpleTestClass : Attribute { }
@@ -8,14 +8,8 @@ internal class SimpleTestClass : Attribute { }
 [AttributeUsage(AttributeTargets.Method)]
 internal class SimpleTestMethod : Attribute
 {
-  public readonly uint repeatTest = 1;
-
-  public SimpleTestMethod() { }
-
-  public SimpleTestMethod(uint repeatTest)
-  {
-    this.repeatTest = repeatTest;
-  }
+  public uint repeatTest = 1;
+  public Node godotNode;
 }
 
 [AttributeUsage(AttributeTargets.Method)]

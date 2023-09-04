@@ -20,7 +20,7 @@ internal class ExampleHelperMethods
     shouldBeFalse = false;
   }
 
-  [SimpleTestMethod(repeatTest: 2)]
+  [SimpleTestMethod(repeatTest = 2)]
   public void TestBeforeEach()
   {
     shouldBeZero++;
@@ -28,7 +28,7 @@ internal class ExampleHelperMethods
   }
 
 
-  [SimpleTestMethod(repeatTest: 2)]
+  [SimpleTestMethod(repeatTest = 2)]
   public void TestAfterEach()
   {
     Assertions.AssertFalse(shouldBeFalse);

@@ -40,7 +40,8 @@ public class Runner
     foreach (var instance in testObjects)
     {
       testsPassed = testsPassed &&
-        new TestObjectRunner(logger, instance, timeoutMs).RunAllTestsInObject();
+        new TestObjectRunner(
+          godotInterface, logger, instance, timeoutMs).RunAllTestsInObject();
     }
     logger.AnnounceBlockEnd($"> {MessageTemplates.GetTestResultString(testsPassed)} End tests for namespace: {namespaceName} | took: {stopwatch.ElapsedMilliseconds}ms");
 

@@ -7,14 +7,20 @@ namespace SGT;
 
 internal class TestObjectRunner
 {
+  private readonly GodotInterface godotInterface;
   private readonly Logger logger;
   private readonly object testedObject;
   private readonly long timeoutMs;
   private readonly MethodInfo[] methods;
   private bool testPassed = true;
 
-  public TestObjectRunner(Logger logger, object testedObject, long timeoutMs)
+  public TestObjectRunner(
+    GodotInterface godotInterface,
+    Logger logger,
+    object testedObject,
+    long timeoutMs)
   {
+    this.godotInterface = godotInterface;
     this.logger = logger;
     this.testedObject = testedObject;
     this.timeoutMs = timeoutMs;
