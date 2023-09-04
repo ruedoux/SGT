@@ -21,7 +21,7 @@ public class TestedClass
 }
 
 [SimpleTestClass]
-public class ExampleMockTest
+internal class ExampleMockTest
 {
   [SimpleTestMethod]
   public void TestMock()

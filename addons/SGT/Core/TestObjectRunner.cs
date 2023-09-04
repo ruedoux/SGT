@@ -5,15 +5,17 @@ using System.Threading.Tasks;
 
 namespace SGT;
 
-public class TestObjectRunner
+internal class TestObjectRunner
 {
+  private readonly Logger logger;
   private readonly object testedObject;
   private readonly long timeoutMs;
   private readonly MethodInfo[] methods;
   private bool testPassed = true;
 
-  public TestObjectRunner(object testedObject, long timeoutMs)
+  public TestObjectRunner(Logger logger, object testedObject, long timeoutMs)
   {
+    this.logger = logger;
     this.testedObject = testedObject;
     this.timeoutMs = timeoutMs;
     methods = testedObject.GetType().GetMethods(
@@ -25,20 +27,20 @@ public class TestObjectRunner
     var simpleTestMethods = MethodClassifier.GetAllAttributeMethods<SimpleTestMethod>(methods);
     if (simpleTestMethods.Count == 0)
     {
-      Logger.Log($"> Skipping: {testedObject.GetType().Name}, no test methods found.");
+      logger.Log($"> Skipping: {testedObject.GetType().Name}, no test methods found.");
       return true;
     }
 
     var stopwatch = Stopwatch.StartNew();
 
-    Logger.AnnounceBlockStart($"> Running: {testedObject.GetType().Name}");
+    logger.AnnounceBlockStart($"> Running: {testedObject.GetType().Name}");
     UpdateTestStatus(RunHelperMethod<SimpleBeforeAll>());
     foreach (var method in simpleTestMethods)
     {
       RunSingleTestMethodCase(method);
     }
     UpdateTestStatus(RunHelperMethod<SimpleAfterAll>());
-    Logger.AnnounceBlockEnd($"> {MessageTemplates.GetTestResultString(testPassed)} {testedObject.GetType().Name} | took: {stopwatch.ElapsedMilliseconds}ms");
+    logger.AnnounceBlockEnd($"> {MessageTemplates.GetTestResultString(testPassed)} {testedObject.GetType().Name} | took: {stopwatch.ElapsedMilliseconds}ms");
 
     return testPassed;
   }
@@ -72,21 +74,21 @@ public class TestObjectRunner
       await testTask.WaitAsync(TimeSpan.FromMilliseconds(timeoutMs));
       if (logSuccess)
       {
-        Logger.Log(MessageTemplates.GetMethodResultMessage(
+        logger.Log(MessageTemplates.GetMethodResultMessage(
           true, methodInfo.Name, stopwatch.ElapsedMilliseconds));
       }
       return true;
     }
     catch (TimeoutException)
     {
-      Logger.Log(MessageTemplates.GetTimeoutMessage(
+      logger.Log(MessageTemplates.GetTimeoutMessage(
         methodInfo.Name, stopwatch.ElapsedMilliseconds));
     }
     catch (Exception ex)
     {
-      Logger.Log(MessageTemplates.GetMethodResultMessage(
+      logger.Log(MessageTemplates.GetMethodResultMessage(
         false, methodInfo.Name, stopwatch.ElapsedMilliseconds));
-      Logger.Log($"{ex.InnerException}\n");
+      logger.Log($"{ex.InnerException}\n");
     }
 
     return false;

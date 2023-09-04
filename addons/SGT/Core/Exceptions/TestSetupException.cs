@@ -1,7 +1,7 @@
 namespace SGT;
 using System;
 
-public class TestSetupException : Exception
+internal class TestSetupException : Exception
 {
   public TestSetupException(string message)
        : base(message)

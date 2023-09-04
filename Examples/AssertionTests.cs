@@ -5,7 +5,7 @@ using SGT;
 
 
 [SimpleTestClass]
-public class AssertionTest
+internal class AssertionTest
 {
 
   [SimpleTestMethod]

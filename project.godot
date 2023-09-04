@@ -13,6 +13,18 @@ config_version=5
 config/name="SGT"
 config/features=PackedStringArray("4.1", "C#", "Forward Plus")
 
+[autoload]
+
+SGT="*res://addons/SGT/Godot/GodotInterface.cs"
+
 [dotnet]
 
 project/assembly_name="SGT"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/SGT/plugin.cfg")
+
+[filesystem]
+
+import/blender/enabled=false

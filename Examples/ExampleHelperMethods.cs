@@ -2,7 +2,7 @@ namespace PassingTests;
 using SGT;
 
 [SimpleTestClass]
-public class ExampleHelperMethods
+internal class ExampleHelperMethods
 {
   private int shouldBeZero = 0;
   private bool shouldBeFalse = false;

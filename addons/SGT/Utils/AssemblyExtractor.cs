@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 
 
-public static class AssemblyExtractor
+internal static class AssemblyExtractor
 {
   public static string defaultNamespaceName = "Default";
 

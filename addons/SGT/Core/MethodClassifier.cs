@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-public static class MethodClassifier
+internal static class MethodClassifier
 {
   public static MethodInfo GetSingleAttributeMethod<T>(
     MethodInfo[] methods, object testObject)

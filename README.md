@@ -23,7 +23,7 @@ Example test class would look something like this:
 
 ```cs
 [SimpleTestClass]
-public class ExampleAssertionTest
+internal class ExampleAssertionTest
 {
   [SimpleBeforeEach]
   public void BeforeEach()

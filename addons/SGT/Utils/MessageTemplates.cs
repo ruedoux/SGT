@@ -1,9 +1,7 @@
-using System.Xml.XPath;
-
 namespace SGT;
 
 
-public static class MessageTemplates
+internal static class MessageTemplates
 {
 
   public static string GetMethodResultMessage(
