@@ -7,7 +7,7 @@ public partial class Plugin : EditorPlugin
 {
   public override void _EnterTree()
   {
-    AddAutoloadSingleton("SGT", "res://addons/SGT/Godot/GodotInterface.cs");
+    AddAutoloadSingleton("SGT", "res://addons/SGT/Bridge/GodotInterface.cs");
     GD.Print("Loaded SGT plugin.");
   }
 }

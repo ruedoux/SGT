@@ -5,7 +5,7 @@ public partial class GodotInterface : Node
 {
   public Runner GetRunner()
   {
-    return new Runner(new Logger(this));
+    return new Runner(this);
   }
 
   public void AddLog(string msgs, Logger.MESSAGE_TYPE messageType)

@@ -15,7 +15,7 @@ config/features=PackedStringArray("4.1", "C#", "Forward Plus")
 
 [autoload]
 
-SGT="*res://addons/SGT/Godot/GodotInterface.cs"
+SGT="*res://addons/SGT/Bridge/GodotInterface.cs"
 
 [dotnet]
 

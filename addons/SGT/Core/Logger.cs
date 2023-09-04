@@ -20,7 +20,8 @@ public class Logger
   public bool supressWarning = false;
   public uint indentationTabs = 0;
 
-  public Logger(GodotInterface godotInterface)
+
+  internal Logger(GodotInterface godotInterface)
   {
     this.godotInterface = godotInterface;
   }

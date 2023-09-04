@@ -4,13 +4,15 @@ using System.Diagnostics;
 
 public class Runner
 {
+  public long timeoutMs = 60 * 1000;
+  private readonly GodotInterface godotInterface;
   private readonly Logger logger;
-  private readonly long timeoutMs;
 
-  public Runner(Logger logger, long timeoutMs = 60 * 1000)
+
+  internal Runner(GodotInterface godotInterface)
   {
-    this.logger = logger;
-    this.timeoutMs = timeoutMs;
+    this.godotInterface = godotInterface;
+    logger = new(godotInterface);
   }
 
   public bool RunAllTests()
