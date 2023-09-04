@@ -31,6 +31,14 @@ public class Logger
     ForwardLog("", MESSAGE_TYPE.NORMAL, msgs);
   }
 
+  public void LogArray(string[] lines)
+  {
+    foreach (string line in lines)
+    {
+      Log(line);
+    }
+  }
+
   public void LogError(params object[] msgs)
   {
     ForwardLog(ERROR_MARKER, MESSAGE_TYPE.ERROR, msgs);

@@ -1,6 +1,7 @@
 namespace SGT;
 using System;
-
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 public static class Assertions
 {
@@ -115,5 +116,38 @@ public static class Assertions
     }
 
     throw new AssertionException($"Expected {typeof(T)} was not thrown.");
+  }
+
+  public static void AssertAwaitAtMost(long timeoutMs, Action action)
+   => Task.Run(() => AssertAwaitAtMostTask(timeoutMs, action)).Wait();
+
+  private static async Task AssertAwaitAtMostTask(long timeoutMs, Action action)
+  {
+    Exception trackedException = new("Empty exception");
+    var ranAction = Task.Run(() =>
+    {
+      while (true)
+      {
+        try
+        {
+          action();
+          break;
+        }
+        catch (Exception ex)
+        {
+          trackedException = ex;
+        }
+      }
+    });
+
+    try
+    {
+      await ranAction.WaitAsync(TimeSpan.FromMilliseconds(timeoutMs));
+    }
+    catch (TimeoutException)
+    {
+      throw new AssertionException(
+        $"Assertion was not passed in time: {timeoutMs}ms", trackedException);
+    }
   }
 }

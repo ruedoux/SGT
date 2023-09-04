@@ -9,14 +9,12 @@ internal static class AssemblyExtractor
 {
   public static string defaultNamespaceName = "Default";
 
-  public static List<object> GetTestObjectsInNamespace(
+  public static List<SimpleTestClass> GetTestObjectsInNamespace(
     string namespaceName)
   {
-    var types = Assembly.GetExecutingAssembly()
-      .GetTypes().Where(t => t.IsDefined(typeof(SimpleTestClass), false));
-    List<object> testObjects = new();
+    List<SimpleTestClass> testObjects = new();
 
-    foreach (var type in types)
+    foreach (var type in GetTestClassTypesFromAssembly())
     {
       string typeNamespace = GetTypeNamespaceName(type);
       if (namespaceName != typeNamespace)
@@ -24,7 +22,7 @@ internal static class AssemblyExtractor
         continue;
       }
 
-      var instance = Activator.CreateInstance(type);
+      var instance = (SimpleTestClass)Activator.CreateInstance(type);
       if (ObjectHasTestMethod(instance))
       {
         testObjects.Add(instance);
@@ -37,10 +35,8 @@ internal static class AssemblyExtractor
   public static List<string> GetAllTestNamespaces()
   {
     List<string> allNamespaces = new();
-    var types = Assembly.GetExecutingAssembly()
-      .GetTypes().Where(t => t.IsDefined(typeof(SimpleTestClass), false));
 
-    foreach (var type in types)
+    foreach (var type in GetTestClassTypesFromAssembly())
     {
       var namespaceName = GetTypeNamespaceName(type);
       if (!allNamespaces.Contains(namespaceName))
@@ -50,6 +46,15 @@ internal static class AssemblyExtractor
     }
 
     return allNamespaces;
+  }
+
+  private static IEnumerable<Type> GetTestClassTypesFromAssembly()
+  {
+    return Assembly.GetExecutingAssembly()
+      .GetTypes().Where(type =>
+        type.IsClass &&
+        !type.IsAbstract &&
+        typeof(SimpleTestClass).IsAssignableFrom(type));
   }
 
   private static bool ObjectHasTestMethod(object instance)

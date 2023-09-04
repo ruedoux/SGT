@@ -7,4 +7,9 @@ internal class AssertionException : Exception
        : base(message)
   {
   }
+
+  public AssertionException(string message, Exception ex)
+       : base(message, ex)
+  {
+  }
 }

@@ -21,9 +21,10 @@ public class Runner
     var stopwatch = Stopwatch.StartNew();
 
     logger.AnnounceBlockStart("> Starting Tests");
-    foreach (string namespaceName in AssemblyExtractor.GetAllTestNamespaces())
+    var allNamespaces = AssemblyExtractor.GetAllTestNamespaces();
+    foreach (string namespaceName in allNamespaces)
     {
-      testsPassed = testsPassed && RunTestsInNamespace(namespaceName);
+      testsPassed &= RunTestsInNamespace(namespaceName);
     }
     logger.AnnounceBlockEnd($"> {MessageTemplates.GetTestResultString(testsPassed)} Finishing Tests | took: {stopwatch.ElapsedMilliseconds}ms");
 
@@ -39,8 +40,7 @@ public class Runner
     logger.AnnounceBlockStart($"> Begin tests for namespace: {namespaceName}");
     foreach (var instance in testObjects)
     {
-      testsPassed = testsPassed &&
-        new TestObjectRunner(
+      testsPassed &= new TestObjectRunner(
           godotInterface, logger, instance, timeoutMs).RunAllTestsInObject();
     }
     logger.AnnounceBlockEnd($"> {MessageTemplates.GetTestResultString(testsPassed)} End tests for namespace: {namespaceName} | took: {stopwatch.ElapsedMilliseconds}ms");

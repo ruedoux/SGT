@@ -4,8 +4,7 @@ using System;
 using SGT;
 
 
-[SimpleTestClass]
-internal class AssertionTest
+internal class AssertionTest : SimpleTestClass
 {
 
   [SimpleTestMethod]

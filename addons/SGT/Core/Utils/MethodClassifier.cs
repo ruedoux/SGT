@@ -20,7 +20,6 @@ internal static class MethodClassifier
     return methodInfos.LastOrDefault();
   }
 
-
   public static List<MethodInfo> GetAllAttributeMethods<T>(MethodInfo[] methods)
     where T : Attribute
   {

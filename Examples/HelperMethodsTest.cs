@@ -1,8 +1,8 @@
 namespace PassingTests;
 using SGT;
 
-[SimpleTestClass]
-internal class ExampleHelperMethods
+
+internal class HelperMethods : SimpleTestClass
 {
   private int shouldBeZero = 0;
   private bool shouldBeFalse = false;

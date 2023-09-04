@@ -7,9 +7,8 @@ namespace SGT;
 
 internal class TestObjectRunner
 {
-  private readonly GodotInterface godotInterface;
   private readonly Logger logger;
-  private readonly object testedObject;
+  private readonly SimpleTestClass testedObject;
   private readonly long timeoutMs;
   private readonly MethodInfo[] methods;
   private bool testPassed = true;
@@ -17,13 +16,14 @@ internal class TestObjectRunner
   public TestObjectRunner(
     GodotInterface godotInterface,
     Logger logger,
-    object testedObject,
+    SimpleTestClass testedObject,
     long timeoutMs)
   {
-    this.godotInterface = godotInterface;
     this.logger = logger;
     this.testedObject = testedObject;
     this.timeoutMs = timeoutMs;
+
+    testedObject.godotInterface = godotInterface;
     methods = testedObject.GetType().GetMethods(
       BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic); ;
   }
@@ -40,12 +40,12 @@ internal class TestObjectRunner
     var stopwatch = Stopwatch.StartNew();
 
     logger.AnnounceBlockStart($"> Running: {testedObject.GetType().Name}");
-    UpdateTestStatus(RunHelperMethod<SimpleBeforeAll>());
+    testPassed &= RunHelperMethod<SimpleBeforeAll>();
     foreach (var method in simpleTestMethods)
     {
       RunSingleTestMethodCase(method);
     }
-    UpdateTestStatus(RunHelperMethod<SimpleAfterAll>());
+    testPassed &= RunHelperMethod<SimpleAfterAll>();
     logger.AnnounceBlockEnd($"> {MessageTemplates.GetTestResultString(testPassed)} {testedObject.GetType().Name} | took: {stopwatch.ElapsedMilliseconds}ms");
 
     return testPassed;
@@ -56,9 +56,10 @@ internal class TestObjectRunner
     uint repeatTest = method.GetCustomAttribute<SimpleTestMethod>().repeatTest;
     for (uint i = 0; i < repeatTest; i++)
     {
-      UpdateTestStatus(RunHelperMethod<SimpleBeforeEach>());
-      UpdateTestStatus(RunTestMethod(method));
-      UpdateTestStatus(RunHelperMethod<SimpleAfterEach>());
+      testPassed &= RunHelperMethod<SimpleBeforeEach>();
+      testPassed &= RunTestMethod(method);
+      testPassed &= RunHelperMethod<SimpleAfterEach>();
+      testedObject.CleanUpNodesAfterTest();
     }
   }
 
@@ -94,17 +95,9 @@ internal class TestObjectRunner
     {
       logger.Log(MessageTemplates.GetMethodResultMessage(
         false, methodInfo.Name, stopwatch.ElapsedMilliseconds));
-      logger.Log($"{ex.InnerException}\n");
+      logger.LogArray(ExceptionParser.Parse(ex, testedObject.GetType().FullName).ToArray());
     }
 
     return false;
-  }
-
-  private void UpdateTestStatus(bool result)
-  {
-    if (!result)
-    {
-      testPassed = false;
-    }
   }
 }
