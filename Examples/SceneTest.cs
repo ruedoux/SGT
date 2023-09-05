@@ -1,21 +1,23 @@
+using Godot;
 using SGT;
 
-internal class SceneTest : SimpleTestClass
+public class SceneTest : SimpleTestClass
 {
   [SimpleTestMethod]
   public void Test()
   {
     // Given
-    var pathToNode = "res://Examples/Scenes/TestNode.tscn";
-    var loadedNode = LoadNode<TestNode>(pathToNode);
+    var loadedNode = LoadNode<TestNode>("res://Examples/Scenes/TestNode.tscn");
 
     // When
-    AddNodeToTestTree(loadedNode);
+    loadedNode.shouldBe10 = 123;
+    CallTestRootDeffered(Node.MethodName.AddChild, loadedNode);
 
     // Then
     Assertions.AssertAwaitAtMost(1000, () =>
     {
-      Assertions.AssertEqual(loadedNode.shouldBe10, 10);
+      Assertions.AssertEqual(10, loadedNode.shouldBe10);
+      Assertions.AssertEqual(5, loadedNode.Returns5());
     });
   }
 }

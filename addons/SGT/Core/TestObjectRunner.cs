@@ -14,7 +14,7 @@ internal class TestObjectRunner
   private bool testPassed = true;
 
   public TestObjectRunner(
-    GodotInterface godotInterface,
+    GodotTestRoot godotTestRoot,
     Logger logger,
     SimpleTestClass testedObject,
     long timeoutMs)
@@ -23,7 +23,7 @@ internal class TestObjectRunner
     this.testedObject = testedObject;
     this.timeoutMs = timeoutMs;
 
-    testedObject.godotInterface = godotInterface;
+    testedObject.godotTestRoot = godotTestRoot;
     methods = testedObject.GetType().GetMethods(
       BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic); ;
   }
@@ -59,7 +59,7 @@ internal class TestObjectRunner
       testPassed &= RunHelperMethod<SimpleBeforeEach>();
       testPassed &= RunTestMethod(method);
       testPassed &= RunHelperMethod<SimpleAfterEach>();
-      testedObject.CleanUpNodesAfterTest();
+      testedObject.CleanUpChildNodes();
     }
   }
 

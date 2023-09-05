@@ -5,14 +5,14 @@ using System.Diagnostics;
 public class Runner
 {
   public long timeoutMs = 60 * 1000;
-  private readonly GodotInterface godotInterface;
+  private readonly GodotTestRoot godotTestRoot;
   private readonly Logger logger;
 
 
-  internal Runner(GodotInterface godotInterface)
+  internal Runner(GodotTestRoot godotTestRoot)
   {
-    this.godotInterface = godotInterface;
-    logger = new(godotInterface);
+    this.godotTestRoot = godotTestRoot;
+    logger = new(godotTestRoot);
   }
 
   public bool RunAllTests()
@@ -41,7 +41,7 @@ public class Runner
     foreach (var instance in testObjects)
     {
       testsPassed &= new TestObjectRunner(
-          godotInterface, logger, instance, timeoutMs).RunAllTestsInObject();
+          godotTestRoot, logger, instance, timeoutMs).RunAllTestsInObject();
     }
     logger.AnnounceBlockEnd($"> {MessageTemplates.GetTestResultString(testsPassed)} End tests for namespace: {namespaceName} | took: {stopwatch.ElapsedMilliseconds}ms");
 

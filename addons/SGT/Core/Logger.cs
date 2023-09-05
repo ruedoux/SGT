@@ -10,7 +10,7 @@ public class Logger
     ERROR
   }
 
-  private readonly GodotInterface godotInterface;
+  private readonly GodotTestRoot godotTestRoot;
 
   private const string ERROR_MARKER = "[ERROR] ";
   private const string WARNING_MARKER = "[WARN] ";
@@ -21,9 +21,9 @@ public class Logger
   public uint indentationTabs = 0;
 
 
-  internal Logger(GodotInterface godotInterface)
+  internal Logger(GodotTestRoot godotTestRoot)
   {
-    this.godotInterface = godotInterface;
+    this.godotTestRoot = godotTestRoot;
   }
 
   public void Log(params object[] msgs)
@@ -90,6 +90,6 @@ public class Logger
       messageType = MESSAGE_TYPE.NORMAL;
     }
 
-    godotInterface.AddLog(output, messageType);
+    godotTestRoot.AddLog(output, messageType);
   }
 }

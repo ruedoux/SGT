@@ -1,5 +1,4 @@
 namespace SGT;
-using System.Collections.Generic;
 using System;
 using Godot;
 
@@ -23,19 +22,11 @@ public class SimpleAfterAll : Attribute { }
 
 public abstract class SimpleTestClass
 {
-  /// <summary> 
-  /// SGT singleton, access to scene tree 
-  /// </summary>
-  public GodotInterface godotInterface;
-  private readonly List<Node> addedNodes = new();
+  internal GodotTestRoot godotTestRoot;
 
-  /// <summary> 
-  /// Loads and adds node to tree
-  /// </summary>
-  public void AddNodeToTestTree(Node node)
+  public void CallTestRootDeffered(string methodName, params Variant[] args)
   {
-    addedNodes.Add(node);
-    godotInterface.CallDeferred("add_child", node);
+    godotTestRoot.CallDeferred(methodName, args);
   }
 
   public T LoadNode<T>(string pathToNode) where T : Node
@@ -46,12 +37,8 @@ public abstract class SimpleTestClass
   /// <summary> 
   /// Called automatically after each test case (called after SimpleAfterEach)
   /// </summary>
-  public void CleanUpNodesAfterTest()
+  public void CleanUpChildNodes()
   {
-    foreach (var node in addedNodes)
-    {
-      godotInterface.CallDeferred("remove_child", node);
-      node.QueueFree();
-    }
+    godotTestRoot.CallDeferred("DeleteAllChildren");
   }
 }

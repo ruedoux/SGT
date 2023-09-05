@@ -17,39 +17,28 @@ How to use
 
 Add `[SimpleTestClass]` attribute to your testing class and `[SimpleTestMethod]` attribute to test methods.
 
-Run `EdditorRunner.tscn` provided in `addons/SGT`. Thats it, no additional setup is needed for it to work.
+Run `EdditorRunner.tscn` provided in `addons/SGT`. Thats it, no additional setup is needed for it to work (in 4.1.1 version at least).
 
 Example test class would look something like this:
 
 ```cs
-[SimpleTestClass]
-internal class ExampleAssertionTest
+public class SceneTest : SimpleTestClass
 {
-  [SimpleBeforeEach]
-  public void BeforeEach()
-  {
-    // Setup
-  }
-
-  [SimpleAfterEach]
-  public void AfterEach()
-  {
-    // Clean
-  }
-
   [SimpleTestMethod]
-  public void SomeTestCase()
+  public void Test()
   {
     // Given
-    int a = 1;
-    int b = 2;
-    int expectedResult = 3;
+    var loadedNode = LoadNode<TestNode>("res://Examples/Scenes/TestNode.tscn");
 
     // When
-    int result = a + b;
+    CallTestRootDeffered(Node.MethodName.AddChild, loadedNode);
 
     // Then
-    Assertions.AssertEqual(expectedResult, result);
+    Assertions.AssertAwaitAtMost(1000, () =>
+    {
+      Assertions.AssertEqual(10, loadedNode.shouldBe10);
+      Assertions.AssertEqual(5, loadedNode.Returns5());
+    });
   }
 }
 ```
@@ -84,8 +73,7 @@ Testing class can be in any `.cs` file in your project, I would recommend puttin
 </PropertyGroup>
 ```
 
-For older versions of godot
- `EdditorRunner.tscn` can be simply deleted because it only serves as an entry point and a pretty way to show test results, all functions that actually start the tests are in [Runner.cs](https://github.com/RedouxG/SGT/blob/main/addons/SGT/Core/Runner.cs). So if you  really want to you can use this addon with minimal effort of setup in any other godot version.
+For older versions of godot `EdditorRunner.tscn` can be simply deleted because it only serves as an entry point. All you need to do to run the tests is: `GetNode<GodotTestRoot>("/root/SGT").RunAllTests()`, SGT singleton serves as a bridge between test library and Godot.
 
 TODO:
 - Add some visually pleasing output of the tests to the runner node

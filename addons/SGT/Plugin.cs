@@ -6,7 +6,7 @@ using Godot;
 public partial class Plugin : EditorPlugin
 {
   private const string SINGLETON_NAME = "SGT";
-  private const string SINGLETON_PATH = "res://addons/SGT/Bridge/GodotInterface.cs";
+  private const string SINGLETON_PATH = "res://addons/SGT/Bridge/GodotTestRoot.cs";
 
   public override void _EnterTree()
   {
