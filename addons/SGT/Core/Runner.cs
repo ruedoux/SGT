@@ -2,17 +2,14 @@ namespace SGT;
 using System.Diagnostics;
 
 
-public class Runner
+internal class Runner
 {
   public long timeoutMs = 60 * 1000;
   private readonly GodotTestRoot godotTestRoot;
-  private readonly Logger logger;
-
 
   internal Runner(GodotTestRoot godotTestRoot)
   {
     this.godotTestRoot = godotTestRoot;
-    logger = new(godotTestRoot);
   }
 
   public bool RunAllTests()
@@ -20,13 +17,13 @@ public class Runner
     bool testsPassed = true;
     var stopwatch = Stopwatch.StartNew();
 
-    logger.AnnounceBlockStart("> Starting Tests");
+    godotTestRoot.logger.AnnounceBlockStart("> Starting Tests");
     var allNamespaces = AssemblyExtractor.GetAllTestNamespaces();
     foreach (string namespaceName in allNamespaces)
     {
       testsPassed &= RunTestsInNamespace(namespaceName);
     }
-    logger.AnnounceBlockEnd($"> {MessageTemplates.GetTestResultString(testsPassed)} Finishing Tests | took: {stopwatch.ElapsedMilliseconds}ms");
+    godotTestRoot.logger.AnnounceBlockEnd($"> {MessageTemplates.GetTestResultString(testsPassed)} Finishing Tests | took: {stopwatch.ElapsedMilliseconds}ms");
 
     return testsPassed;
   }
@@ -37,13 +34,13 @@ public class Runner
     var testObjects = AssemblyExtractor.GetTestObjectsInNamespace(namespaceName);
     var stopwatch = Stopwatch.StartNew();
 
-    logger.AnnounceBlockStart($"> Begin tests for namespace: {namespaceName}");
+    godotTestRoot.logger.AnnounceBlockStart($"> Begin tests for namespace: {namespaceName}");
     foreach (var instance in testObjects)
     {
       testsPassed &= new TestObjectRunner(
-          godotTestRoot, logger, instance, timeoutMs).RunAllTestsInObject();
+          godotTestRoot, instance, timeoutMs).RunAllTestsInObject();
     }
-    logger.AnnounceBlockEnd($"> {MessageTemplates.GetTestResultString(testsPassed)} End tests for namespace: {namespaceName} | took: {stopwatch.ElapsedMilliseconds}ms");
+    godotTestRoot.logger.AnnounceBlockEnd($"> {MessageTemplates.GetTestResultString(testsPassed)} End tests for namespace: {namespaceName} | took: {stopwatch.ElapsedMilliseconds}ms");
 
     return testsPassed;
   }

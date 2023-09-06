@@ -7,7 +7,7 @@ namespace SGT;
 
 internal class TestObjectRunner
 {
-  private readonly Logger logger;
+  private readonly GodotTestRoot godotTestRoot;
   private readonly SimpleTestClass testedObject;
   private readonly long timeoutMs;
   private readonly MethodInfo[] methods;
@@ -15,11 +15,10 @@ internal class TestObjectRunner
 
   public TestObjectRunner(
     GodotTestRoot godotTestRoot,
-    Logger logger,
     SimpleTestClass testedObject,
     long timeoutMs)
   {
-    this.logger = logger;
+    this.godotTestRoot = godotTestRoot;
     this.testedObject = testedObject;
     this.timeoutMs = timeoutMs;
 
@@ -30,23 +29,28 @@ internal class TestObjectRunner
 
   public bool RunAllTestsInObject()
   {
-    var simpleTestMethods = MethodClassifier.GetAllAttributeMethods<SimpleTestMethod>(methods);
+    var simpleTestMethods = MethodClassifier
+      .GetAllAttributeMethods<SimpleTestMethod>(methods);
+
     if (simpleTestMethods.Count == 0)
     {
-      logger.Log($"> Skipping: {testedObject.GetType().Name}, no test methods found.");
+      godotTestRoot.logger.Log(
+        $"> Skipping: {testedObject.GetType().Name}, no test methods found.");
       return true;
     }
 
     var stopwatch = Stopwatch.StartNew();
 
-    logger.AnnounceBlockStart($"> Running: {testedObject.GetType().Name}");
+    godotTestRoot.logger.AnnounceBlockStart(
+      $"> Running: {testedObject.GetType().Name}");
     testPassed &= RunHelperMethod<SimpleBeforeAll>();
     foreach (var method in simpleTestMethods)
     {
       RunSingleTestMethodCase(method);
     }
     testPassed &= RunHelperMethod<SimpleAfterAll>();
-    logger.AnnounceBlockEnd($"> {MessageTemplates.GetTestResultString(testPassed)} {testedObject.GetType().Name} | took: {stopwatch.ElapsedMilliseconds}ms");
+    godotTestRoot.logger.AnnounceBlockEnd(
+      $"> {MessageTemplates.GetTestResultString(testPassed)} {testedObject.GetType().Name} | took: {stopwatch.ElapsedMilliseconds}ms");
 
     return testPassed;
   }
@@ -59,7 +63,7 @@ internal class TestObjectRunner
       testPassed &= RunHelperMethod<SimpleBeforeEach>();
       testPassed &= RunTestMethod(method);
       testPassed &= RunHelperMethod<SimpleAfterEach>();
-      testedObject.CleanUpChildNodes();
+      testedObject.CleanUpTestRootChildNodes();
     }
   }
 
@@ -81,21 +85,22 @@ internal class TestObjectRunner
       await testTask.WaitAsync(TimeSpan.FromMilliseconds(timeoutMs));
       if (logSuccess)
       {
-        logger.Log(MessageTemplates.GetMethodResultMessage(
+        godotTestRoot.logger.Log(MessageTemplates.GetMethodResultMessage(
           true, methodInfo.Name, stopwatch.ElapsedMilliseconds));
       }
       return true;
     }
     catch (TimeoutException)
     {
-      logger.Log(MessageTemplates.GetTimeoutMessage(
+      godotTestRoot.logger.Log(MessageTemplates.GetTimeoutMessage(
         methodInfo.Name, stopwatch.ElapsedMilliseconds));
     }
     catch (Exception ex)
     {
-      logger.Log(MessageTemplates.GetMethodResultMessage(
+      godotTestRoot.logger.Log(MessageTemplates.GetMethodResultMessage(
         false, methodInfo.Name, stopwatch.ElapsedMilliseconds));
-      logger.LogArray(ExceptionParser.Parse(ex, testedObject.GetType().FullName).ToArray());
+      godotTestRoot.logger.LogArray(
+        ExceptionParser.Parse(ex, testedObject.GetType().FullName).ToArray());
     }
 
     return false;

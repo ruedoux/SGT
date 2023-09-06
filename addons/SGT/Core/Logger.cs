@@ -10,6 +10,10 @@ public class Logger
     ERROR
   }
 
+  public ObserverManager<string> normalLogObservers = new();
+  public ObserverManager<string> warningLogObservers = new();
+  public ObserverManager<string> errorLogObservers = new();
+
   private readonly GodotTestRoot godotTestRoot;
 
   private const string ERROR_MARKER = "[ERROR] ";
@@ -90,6 +94,17 @@ public class Logger
       messageType = MESSAGE_TYPE.NORMAL;
     }
 
-    godotTestRoot.AddLog(output, messageType);
+    if (messageType == Logger.MESSAGE_TYPE.NORMAL)
+    {
+      normalLogObservers.NotifyObservers(output);
+    }
+    if (messageType == Logger.MESSAGE_TYPE.WARNING)
+    {
+      warningLogObservers.NotifyObservers(output);
+    }
+    if (messageType == Logger.MESSAGE_TYPE.ERROR)
+    {
+      errorLogObservers.NotifyObservers(output);
+    }
   }
 }

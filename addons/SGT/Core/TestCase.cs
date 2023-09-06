@@ -37,7 +37,7 @@ public abstract class SimpleTestClass
   /// <summary> 
   /// Called automatically after each test case (called after SimpleAfterEach)
   /// </summary>
-  public void CleanUpChildNodes()
+  public void CleanUpTestRootChildNodes()
   {
     godotTestRoot.CallDeferred("DeleteAllChildren");
   }

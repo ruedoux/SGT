@@ -13,10 +13,6 @@ config_version=5
 config/name="SGT"
 config/features=PackedStringArray("4.1", "C#", "Forward Plus")
 
-[autoload]
-
-SGT="*res://addons/SGT/Bridge/GodotTestRoot.cs"
-
 [dotnet]
 
 project/assembly_name="SGT"

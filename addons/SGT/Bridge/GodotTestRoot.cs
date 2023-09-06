@@ -1,28 +1,31 @@
 namespace SGT;
-
 using System.Threading.Tasks;
 using Godot;
 
 public partial class GodotTestRoot : Node
 {
-  public void RunAllTests()
+
+  internal Runner runner;
+  public Logger logger;
+
+
+  public GodotTestRoot()
   {
-    Runner runner = new(this);
-    Task.Run(() => runner.RunAllTests());
+    logger = new(this);
+    logger.warningLogObservers.AddObservers(GD.Print, GD.PushWarning);
+    logger.normalLogObservers.AddObservers(GD.Print);
+    logger.errorLogObservers.AddObservers(GD.Print, GD.PushError);
   }
 
-  public void AddLog(
-    string msgs, Logger.MESSAGE_TYPE messageType = Logger.MESSAGE_TYPE.NORMAL)
+  public override void _Ready()
   {
-    GD.Print(msgs);
-    if (messageType == Logger.MESSAGE_TYPE.WARNING)
-    {
-      GD.PushWarning(msgs);
-    }
-    if (messageType == Logger.MESSAGE_TYPE.ERROR)
-    {
-      GD.PushWarning(msgs);
-    }
+    GD.Print("yap");
+  }
+
+  public void RunAllTests()
+  {
+    runner ??= new(this);
+    Task.Run(() => runner.RunAllTests());
   }
 
   public void DeleteAllChildren()

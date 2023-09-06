@@ -1,8 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://b545m4mtpte7a"]
-
-[ext_resource type="Script" path="res://addons/SGT/EditorRunner.cs" id="1_ixn6f"]
-
-[node name="EditorRunner" type="Control"]
-layout_mode = 3
-anchors_preset = 0
-script = ExtResource("1_ixn6f")
