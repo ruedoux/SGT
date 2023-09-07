@@ -12,35 +12,40 @@ internal class Runner
     this.godotTestRoot = godotTestRoot;
   }
 
-  public bool RunAllTests()
+  public bool RunTestsInNamespaces(string[] namespaces)
   {
     bool testsPassed = true;
-    var stopwatch = Stopwatch.StartNew();
 
-    godotTestRoot.logger.AnnounceBlockStart("> Starting Tests");
-    var allNamespaces = AssemblyExtractor.GetAllTestNamespaces();
-    foreach (string namespaceName in allNamespaces)
+    godotTestRoot.logger.StartBlock(MessageTemplates.GetRunAll(namespaces));
+    var stopwatch = Stopwatch.StartNew();
+    foreach (string namespaceName in namespaces)
     {
       testsPassed &= RunTestsInNamespace(namespaceName);
     }
-    godotTestRoot.logger.AnnounceBlockEnd($"> {MessageTemplates.GetTestResultString(testsPassed)} Finishing Tests | took: {stopwatch.ElapsedMilliseconds}ms");
+    Message endMessage = testsPassed
+      ? MessageTemplates.GetEndSuccessAll(stopwatch.ElapsedMilliseconds)
+      : MessageTemplates.GetEndFailedAll(stopwatch.ElapsedMilliseconds);
+    godotTestRoot.logger.EndBlock(endMessage);
 
     return testsPassed;
   }
 
-  public bool RunTestsInNamespace(string namespaceName)
+  private bool RunTestsInNamespace(string namespaceName)
   {
     bool testsPassed = true;
     var testObjects = AssemblyExtractor.GetTestObjectsInNamespace(namespaceName);
     var stopwatch = Stopwatch.StartNew();
 
-    godotTestRoot.logger.AnnounceBlockStart($"> Begin tests for namespace: {namespaceName}");
+    godotTestRoot.logger.StartBlock(MessageTemplates.GetRunNamespace(namespaceName));
     foreach (var instance in testObjects)
     {
       testsPassed &= new TestObjectRunner(
           godotTestRoot, instance, timeoutMs).RunAllTestsInObject();
     }
-    godotTestRoot.logger.AnnounceBlockEnd($"> {MessageTemplates.GetTestResultString(testsPassed)} End tests for namespace: {namespaceName} | took: {stopwatch.ElapsedMilliseconds}ms");
+    Message endMessage = testsPassed
+      ? MessageTemplates.GetEndSuccessNamespace(namespaceName, stopwatch.ElapsedMilliseconds)
+      : MessageTemplates.GetEndFailedNamespace(namespaceName, stopwatch.ElapsedMilliseconds);
+    godotTestRoot.logger.EndBlock(endMessage);
 
     return testsPassed;
   }

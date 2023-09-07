@@ -5,8 +5,6 @@ using Godot;
 [Tool]
 public partial class SGTPlugin : EditorPlugin
 {
-
-  private const string SINGLETON_PATH = "res://addons/SGT/Bridge/GodotTestRoot.cs";
   private const string BOTTOM_PANEL_PATH = "res://addons/SGT/Bridge/GUI/BottomPanel.tscn";
   private BottomPanel bottomPanel;
 
@@ -17,7 +15,7 @@ public partial class SGTPlugin : EditorPlugin
       .InstantiateOrNull<BottomPanel>();
     if (bottomPanel != null)
     {
-      AddControlToBottomPanel(bottomPanel, Config.PLUGIN_NAME);
+      AddControlToBottomPanel(bottomPanel, "SGT");
       bottomPanel.SetInterface(GetEditorInterface());
       GD.Print("Loaded SGT plugin.");
     }

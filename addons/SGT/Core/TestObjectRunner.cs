@@ -1,9 +1,8 @@
+namespace SGT;
 using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
-
-namespace SGT;
 
 internal class TestObjectRunner
 {
@@ -24,33 +23,35 @@ internal class TestObjectRunner
 
     testedObject.godotTestRoot = godotTestRoot;
     methods = testedObject.GetType().GetMethods(
-      BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic); ;
+      BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
   }
 
   public bool RunAllTestsInObject()
   {
     var simpleTestMethods = MethodClassifier
       .GetAllAttributeMethods<SimpleTestMethod>(methods);
+    var className = testedObject.GetType().Name;
 
     if (simpleTestMethods.Count == 0)
     {
-      godotTestRoot.logger.Log(
-        $"> Skipping: {testedObject.GetType().Name}, no test methods found.");
+      godotTestRoot.logger.Log(MessageTemplates.GetSkipEmptyClass(className));
       return true;
     }
 
     var stopwatch = Stopwatch.StartNew();
 
-    godotTestRoot.logger.AnnounceBlockStart(
-      $"> Running: {testedObject.GetType().Name}");
+    godotTestRoot.logger.StartBlock(MessageTemplates.GetRunClass(className));
     testPassed &= RunHelperMethod<SimpleBeforeAll>();
     foreach (var method in simpleTestMethods)
     {
       RunSingleTestMethodCase(method);
     }
     testPassed &= RunHelperMethod<SimpleAfterAll>();
-    godotTestRoot.logger.AnnounceBlockEnd(
-      $"> {MessageTemplates.GetTestResultString(testPassed)} {testedObject.GetType().Name} | took: {stopwatch.ElapsedMilliseconds}ms");
+
+    Message endMessage = testPassed
+      ? MessageTemplates.GetEndSuccessClass(className, stopwatch.ElapsedMilliseconds)
+      : MessageTemplates.GetEndFailedClass(className, stopwatch.ElapsedMilliseconds);
+    godotTestRoot.logger.EndBlock(endMessage);
 
     return testPassed;
   }
@@ -85,22 +86,22 @@ internal class TestObjectRunner
       await testTask.WaitAsync(TimeSpan.FromMilliseconds(timeoutMs));
       if (logSuccess)
       {
-        godotTestRoot.logger.Log(MessageTemplates.GetMethodResultMessage(
-          true, methodInfo.Name, stopwatch.ElapsedMilliseconds));
+        godotTestRoot.logger.Log(MessageTemplates.GetPassedTestMessage(
+          methodInfo.Name, stopwatch.ElapsedMilliseconds));
       }
       return true;
     }
     catch (TimeoutException)
     {
-      godotTestRoot.logger.Log(MessageTemplates.GetTimeoutMessage(
+      godotTestRoot.logger.Log(MessageTemplates.GetTimeoutTestMessage(
         methodInfo.Name, stopwatch.ElapsedMilliseconds));
     }
     catch (Exception ex)
     {
-      godotTestRoot.logger.Log(MessageTemplates.GetMethodResultMessage(
-        false, methodInfo.Name, stopwatch.ElapsedMilliseconds));
-      godotTestRoot.logger.LogArray(
-        ExceptionParser.Parse(ex, testedObject.GetType().FullName).ToArray());
+      godotTestRoot.logger.Log(
+        MessageTemplates.GetFailedTestMessage(
+          methodInfo.Name, stopwatch.ElapsedMilliseconds));
+      godotTestRoot.logger.LogException(ex);
     }
 
     return false;

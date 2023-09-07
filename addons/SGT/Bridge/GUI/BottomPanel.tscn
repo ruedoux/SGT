@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://jv81i0y0hgv1"]
+[gd_scene load_steps=4 format=3 uid="uid://jv81i0y0hgv1"]
 
 [ext_resource type="Script" path="res://addons/SGT/Bridge/GUI/BottomPanel.cs" id="1_x06uv"]
 
@@ -6,6 +6,8 @@
 variation_embolden = 0.06
 spacing_top = 4
 spacing_bottom = 4
+
+[sub_resource type="FontVariation" id="FontVariation_0yqod"]
 
 [node name="BottomPanel" type="Control"]
 layout_mode = 3
@@ -18,30 +20,56 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_x06uv")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="."]
+[node name="Console" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer"]
-layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="LogBoard" type="RichTextLabel" parent="ScrollContainer/HBoxContainer"]
+[node name="RunContainer" type="HBoxContainer" parent="Console"]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 3
-bbcode_enabled = true
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer/HBoxContainer"]
+[node name="RunAllMargin" type="MarginContainer" parent="Console/RunContainer"]
 layout_mode = 2
+theme_override_constants/margin_right = 30
 
-[node name="StartAll" type="Button" parent="ScrollContainer/HBoxContainer/VBoxContainer"]
+[node name="RunAll" type="Button" parent="Console/RunContainer/RunAllMargin"]
 layout_mode = 2
+focus_mode = 0
 theme_override_fonts/font = SubResource("FontVariation_yr43t")
 theme_override_font_sizes/font_size = 25
-text = "StartAll"
+text = " > Run All "
+
+[node name="RunSelected" type="Button" parent="Console/RunContainer"]
+layout_mode = 2
+focus_mode = 0
+theme_override_fonts/font = SubResource("FontVariation_yr43t")
+theme_override_font_sizes/font_size = 25
+text = " > Run Selected "
+
+[node name="NamespaceSelect" type="OptionButton" parent="Console/RunContainer"]
+layout_mode = 2
+focus_mode = 0
+theme_override_fonts/font = SubResource("FontVariation_0yqod")
+theme_override_font_sizes/font_size = 20
+item_count = 2
+popup/item_0/text = "Test Namespace"
+popup/item_0/id = 0
+popup/item_1/text = "TestNamespace"
+popup/item_1/id = 1
+
+[node name="LogContainer" type="VBoxContainer" parent="Console"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LogBoard" type="RichTextLabel" parent="Console/LogContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+fit_content = true
+scroll_following = true
