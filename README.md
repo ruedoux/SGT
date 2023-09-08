@@ -15,9 +15,9 @@ How to use
 **Disclaimer**:
 *Everything for this repo on visual side is done for 4.1.1 (latest) version. If you want to use this addon for older versions some minor setup could be needed (look end of readme).*
 
-Add `[SimpleTestClass]` attribute to your testing class and `[SimpleTestMethod]` attribute to test methods.
+Your test class needs to derive from `SimpleTestClass` and test methods needs to have `[SimpleTestMethod]` attribute.
 
-Run `EdditorRunner.tscn` provided in `addons/SGT`. Thats it, no additional setup is needed for it to work (in 4.1.1 version at least).
+After turning on the plugin you will be provided with a bottom panel called `SGT` (similar to GUT). Thats it, no additional setup is needed for it to work (in 4.1.1 version at least).
 
 Example test class would look something like this:
 
@@ -44,6 +44,8 @@ public class SceneTest : SimpleTestClass
 ```
 
 Tests are ran by namespace so you can manually run only one namespace at a time if you want.
+
+All calls to godot scene root need to be done via deffered call: `CallTestRootDeffered()`, since tests are being ran async.
 
 For the time being test output is being shown in the console, I'm planning to integrate it in some prettier way, probably something resembling GUT.
 
@@ -73,9 +75,9 @@ Testing class can be in any `.cs` file in your project, I would recommend puttin
 </PropertyGroup>
 ```
 
-For older versions of godot `EdditorRunner.tscn` can be simply deleted because it only serves as an entry point. All you need to do to run the tests is: `GetNode<GodotTestRoot>("/root/SGT").RunAllTests()`, SGT singleton serves as a bridge between test library and Godot.
+**For older versions of godot** everything in `addons/SGT/Bridge/GUI` can be simply deleted because it only serves as GUI and all core parts are written in pure C#. All you need to do to run the tests is to modify `addons/SGT/Core/GodotTestRoot.cs` to be compatible with your version of godot, and simply call `RunTestsInNamespaces(string[] namespaces)`. If you want to run tests for all namespaces you can get them via `AssemblyExtractor.GetAllTestNamespaces().ToArray()`, this function gets all namespaces with tests in your entire project.
 
 TODO:
-- Add some visually pleasing output of the tests to the runner node
-- Add plugin integration so the tests can be ran from a Godot IDE tab
+- Make GUI more pleasant to look at.
+- Standarize output, possibly to XML format similar to other testing frameworks.
 
