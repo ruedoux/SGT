@@ -5,6 +5,8 @@ using Godot;
 public partial class GodotTestRoot : Control
 {
 
+  private Task awaitedTests;
+  private bool waitingForAwaitedTests = false;
   internal Runner runner;
   public Logger logger = new();
 
@@ -19,7 +21,8 @@ public partial class GodotTestRoot : Control
   public void RunTestsInNamespaces(string[] namespaces)
   {
     runner ??= new(this);
-    Task.Run(() => runner.RunTestsInNamespaces(namespaces));
+    awaitedTests = Task.Run(() => runner.RunTestsInNamespaces(namespaces));
+    waitingForAwaitedTests = true;
   }
 
   public void DeleteAllChildren()
@@ -27,6 +30,18 @@ public partial class GodotTestRoot : Control
     foreach (Node child in GetChildren())
     {
       child.QueueFree();
+    }
+  }
+
+  public override void _PhysicsProcess(double delta)
+  {
+    // Kinda clunky way to await for any throws that could happen
+    // Probably there is a better way to do this?
+    if (awaitedTests != null && waitingForAwaitedTests)
+    {
+      waitingForAwaitedTests = false;
+      awaitedTests.Wait();
+      awaitedTests = null;
     }
   }
 }

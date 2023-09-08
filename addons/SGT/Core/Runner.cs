@@ -1,4 +1,6 @@
 namespace SGT;
+
+using System;
 using System.Diagnostics;
 using Godot;
 
@@ -14,6 +16,7 @@ internal class Runner
 
   public bool RunTestsInNamespaces(string[] namespaces)
   {
+    throw new Exception("test");
     if (!AssemblyExtractor.ContainsExistingNamespaces(namespaces))
     {
       throw new TestSetupException(
