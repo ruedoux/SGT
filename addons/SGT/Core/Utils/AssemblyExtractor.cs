@@ -9,6 +9,20 @@ internal static class AssemblyExtractor
 {
   public static string defaultNamespaceName = "Default";
 
+
+  public static bool ContainsExistingNamespaces(string[] namespaces)
+  {
+    string[] existingNamespaces = GetAllTestNamespaces().ToArray();
+    foreach (string ns in namespaces)
+    {
+      if (!existingNamespaces.Contains(ns))
+      {
+        return false;
+      }
+    }
+    return true;
+  }
+
   public static List<SimpleTestClass> GetTestObjectsInNamespace(
     string namespaceName)
   {

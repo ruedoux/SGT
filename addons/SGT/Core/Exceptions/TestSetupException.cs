@@ -7,4 +7,9 @@ internal class TestSetupException : Exception
        : base(message)
   {
   }
+
+  public TestSetupException(string message, Exception ex)
+       : base(message, ex)
+  {
+  }
 }

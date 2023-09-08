@@ -1,7 +1,7 @@
+namespace SGT;
 using System;
-using System.Collections.Generic;
 using Godot;
-using SGT;
+
 
 public partial class GodotRunner : Control
 {
@@ -19,21 +19,12 @@ public partial class GodotRunner : Control
     try
     {
       runnerConfig = RunnerConfig.LoadFromFile();
+      godotTestRoot.RunTestsInNamespaces(runnerConfig.namespaces);
     }
     catch (Exception ex)
     {
-      godotTestRoot.logger.LogException(ex);
-      GD.Print(ex);
+      throw new TestSetupException("Failed to load config!", ex);
     }
-
-    string[] namespacesToRun = runnerConfig.namespacesToRun;
-    if (runnerConfig.namespacesToRun.IsEmpty())
-    {
-      namespacesToRun = AssemblyExtractor.GetAllTestNamespaces().ToArray();
-    }
-
-    godotTestRoot.RunTestsInNamespaces(
-        AssemblyExtractor.GetAllTestNamespaces().ToArray());
   }
 
   public void UpdateLog(Message message)

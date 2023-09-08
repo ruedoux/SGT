@@ -1,6 +1,6 @@
 namespace SGT;
 using System.Diagnostics;
-
+using Godot;
 
 internal class Runner
 {
@@ -14,6 +14,17 @@ internal class Runner
 
   public bool RunTestsInNamespaces(string[] namespaces)
   {
+    if (!AssemblyExtractor.ContainsExistingNamespaces(namespaces))
+    {
+      throw new TestSetupException(
+        "Failed to start test becuase provided config contains invalid namespace.");
+    }
+    if (namespaces.IsEmpty())
+    {
+      throw new TestSetupException(
+        "Failed to start test becuase provided no namespaces.");
+    }
+
     bool testsPassed = true;
 
     godotTestRoot.logger.StartBlock(MessageTemplates.GetRunAll(namespaces));

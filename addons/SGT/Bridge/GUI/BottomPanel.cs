@@ -2,10 +2,8 @@
 namespace SGT;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
 using Godot;
+
 
 [Tool]
 internal partial class BottomPanel : Control
@@ -52,12 +50,7 @@ internal partial class BottomPanel : Control
   public void RunSelectedTests()
   {
     logBoard.Clear();
-    string selectedNamespace = GetSelectedNamespace();
-    var allNamespaces = AssemblyExtractor.GetAllTestNamespaces();
-    if (allNamespaces.Contains(selectedNamespace))
-    {
-      PlayTestScene(new string[] { selectedNamespace });
-    }
+    PlayTestScene(new string[] { GetSelectedNamespace() });
   }
 
   public void UpdateLog(string log)
@@ -69,10 +62,21 @@ internal partial class BottomPanel : Control
   {
     UpdateLog("Running...");
 
-    RunnerConfig runnerConfig = new(namespaces);
-    runnerConfig.SaveToFile();
+    RunnerConfig runnerConfig = new()
+    {
+      namespaces = namespaces
+    };
 
-    editorInterface.PlayCustomScene("res://addons/SGT/Bridge/GUI/GodotRunner.tscn");
+    try
+    {
+      runnerConfig.SaveToFile();
+      editorInterface.PlayCustomScene(
+        "res://addons/SGT/Bridge/GUI/GodotRunner.tscn");
+    }
+    catch (Exception ex)
+    {
+      throw new TestSetupException("Failed to save config file!", ex);
+    }
   }
 
   private string GetSelectedNamespace()
