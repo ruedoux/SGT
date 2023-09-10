@@ -14,8 +14,6 @@ public partial class GodotTestRoot : Control
   public GodotTestRoot()
   {
     logger.allLogObservers.AddObservers(GD.Print);
-    logger.warningLogObservers.AddObservers(GD.PushWarning);
-    logger.errorLogObservers.AddObservers(GD.PushError);
   }
 
   public void RunTestsInNamespaces(string[] namespaces)

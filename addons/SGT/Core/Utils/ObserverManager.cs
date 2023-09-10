@@ -1,3 +1,4 @@
+namespace SGT;
 using System.Collections.Generic;
 
 public class ObserverManager<T>
