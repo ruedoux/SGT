@@ -1,6 +1,8 @@
 using Godot;
 using SGT;
 
+namespace PassingTests;
+
 public class SceneTest : SimpleTestClass
 {
   [SimpleTestMethod]
