@@ -15,12 +15,10 @@ public class Message
   public enum SUIT
   {
     INFORMATION,
-    START_OF_SUIT,
     ERROR_INFORMATION,
-    METHOD_RESULT,
-    CLASS_RESULT,
-    NAMESPACE_RESULT,
-    ALL_TEST_RESULT
+    START_OF_SUIT,
+    END_OF_SUIT,
+    SINGLE_TEST_RESULT,
   }
 
   private readonly string text = String.Empty;

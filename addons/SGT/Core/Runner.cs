@@ -1,12 +1,10 @@
 namespace SGT;
 
-using System;
 using System.Diagnostics;
 using Godot;
 
 internal class Runner
 {
-  public long timeoutMs = 60 * 1000;
   private readonly GodotTestRoot godotTestRoot;
 
   internal Runner(GodotTestRoot godotTestRoot)
@@ -53,12 +51,11 @@ internal class Runner
     foreach (var instance in testObjects)
     {
       testsPassed &= new TestObjectRunner(
-          godotTestRoot, instance, timeoutMs).RunAllTestsInObject();
+          godotTestRoot, instance).Run();
     }
-    Message endMessage = testsPassed
-      ? MessageTemplates.GetEndSuccessNamespace(namespaceName, stopwatch.ElapsedMilliseconds)
-      : MessageTemplates.GetEndFailedNamespace(namespaceName, stopwatch.ElapsedMilliseconds);
-    godotTestRoot.logger.EndBlock(endMessage);
+    godotTestRoot.logger.EndBlock(
+      MessageTemplates.GetSuitResultMessage(
+        namespaceName, stopwatch.ElapsedMilliseconds, testsPassed));
 
     return testsPassed;
   }

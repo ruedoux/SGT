@@ -9,23 +9,22 @@ internal static class MessageTemplates
   private const string TIMEOUT_INDICATOR = "[TIMEOUT]";
   private const string SKIPPED_INDICATOR = "[SKIPPED]";
 
-  public static Message GetFailedTestMessage(string methodName, long timeTook)
-    => Message.GetError(
-      FAILED_INDICATOR,
-      Message.SUIT.METHOD_RESULT,
-      $" {methodName} | took: {timeTook}ms");
+  public static Message GetTestResultMessage(
+    TestMethod methodResult, bool isPassed)
+  {
+    string message = $"{methodResult.methodInfo.Name} | took: {methodResult.stopwatch.ElapsedMilliseconds}ms";
+    return isPassed
+        ? Message.GetSuccess(
+          PASSED_INDICATOR, Message.SUIT.SINGLE_TEST_RESULT, message)
+        : Message.GetError(
+          FAILED_INDICATOR, Message.SUIT.SINGLE_TEST_RESULT, message);
+  }
 
-  public static Message GetPassedTestMessage(string methodName, long timeTook)
-    => Message.GetSuccess(
-      PASSED_INDICATOR,
-      Message.SUIT.METHOD_RESULT,
-      $" {methodName} | took: {timeTook}ms");
-
-  public static Message GetTimeoutTestMessage(string methodName, long timeTook)
+  public static Message GetTestTimeoutMessage(TestMethod testMethod)
     => Message.GetError(
       TIMEOUT_INDICATOR,
-      Message.SUIT.METHOD_RESULT,
-      $" {methodName} | took: {timeTook}ms");
+      Message.SUIT.SINGLE_TEST_RESULT,
+      $" {testMethod.methodInfo.Name} | timeout: {SGTConfig.testTimeoutTimeMs}ms");
 
   public static Message GetSkipEmptyClass(string className)
     => Message.GetWarning(
@@ -39,35 +38,22 @@ internal static class MessageTemplates
       Message.SUIT.START_OF_SUIT,
       $" Running class: {className}");
 
-  public static Message GetEndSuccessClass(string className, long timeTook)
-    => Message.GetSuccess(
-      PASSED_INDICATOR,
-      Message.SUIT.CLASS_RESULT,
-      $" {className} | took: {timeTook}ms");
-
-  public static Message GetEndFailedClass(string className, long timeTook)
-    => Message.GetError(
-      FAILED_INDICATOR,
-      Message.SUIT.CLASS_RESULT,
-      $" {className} | took: {timeTook}ms");
+  public static Message GetSuitResultMessage(
+    string className, long timeTook, bool isPassed)
+  {
+    string message = $" {className} | took: {timeTook}ms";
+    return isPassed
+        ? Message.GetSuccess(
+          PASSED_INDICATOR, Message.SUIT.END_OF_SUIT, message)
+        : Message.GetError(
+          FAILED_INDICATOR, Message.SUIT.END_OF_SUIT, message);
+  }
 
   public static Message GetRunNamespace(string namespaceName)
     => Message.GetInfo(
       START_INDICATOR,
       Message.SUIT.START_OF_SUIT,
       $" Running namespace: {namespaceName}");
-
-  public static Message GetEndSuccessNamespace(string namespaceName, long timeTook)
-    => Message.GetSuccess(
-      PASSED_INDICATOR,
-      Message.SUIT.NAMESPACE_RESULT,
-      $" {namespaceName} | took: {timeTook}ms");
-
-  public static Message GetEndFailedNamespace(string namespaceName, long timeTook)
-    => Message.GetError(
-      FAILED_INDICATOR,
-      Message.SUIT.NAMESPACE_RESULT,
-      $" {namespaceName} | took: {timeTook}ms");
 
   public static Message GetRunAll(string[] namespaces)
     => Message.GetInfo(START_INDICATOR,
@@ -77,13 +63,13 @@ internal static class MessageTemplates
   public static Message GetEndSuccessAll(long timeTook)
     => Message.GetSuccess(
       PASSED_INDICATOR,
-      Message.SUIT.ALL_TEST_RESULT,
+      Message.SUIT.END_OF_SUIT,
       $" All tests | took: {timeTook}ms");
 
   public static Message GetEndFailedAll(long timeTook)
     => Message.GetError(
       FAILED_INDICATOR,
-      Message.SUIT.ALL_TEST_RESULT,
+      Message.SUIT.END_OF_SUIT,
       $" All tests | took: {timeTook}ms");
 
   private static string ListToString(string[] strings)
