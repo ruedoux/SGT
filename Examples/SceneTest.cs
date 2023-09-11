@@ -14,7 +14,7 @@ public class SceneTest : SimpleTestClass
     CallTestRootDeffered(Node.MethodName.AddChild, loadedNode);
 
     // Then
-    Assertions.AssertAwaitAtMost(5000, () =>
+    Assertions.AssertAwaitAtMost(1000, () =>
     {
       Assertions.AssertEqual(10, loadedNode.shouldBe10);
       Assertions.AssertEqual(5, loadedNode.Returns5());

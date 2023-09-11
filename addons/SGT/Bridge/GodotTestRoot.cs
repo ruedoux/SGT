@@ -30,16 +30,4 @@ public partial class GodotTestRoot : Control
       child.QueueFree();
     }
   }
-
-  public override void _PhysicsProcess(double delta)
-  {
-    // Kinda clunky way to await for any throws that could happen
-    // Probably there is a better way to do this?
-    if (awaitedTests != null && waitingForAwaitedTests)
-    {
-      waitingForAwaitedTests = false;
-      awaitedTests.Wait();
-      awaitedTests = null;
-    }
-  }
 }

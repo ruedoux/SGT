@@ -39,6 +39,7 @@ internal partial class BottomPanel : Control
     namespaceSelectButton.Connect(
       OptionButton.SignalName.Pressed,
       new Callable(this, nameof(UpdateNamespaces)));
+    UpdateNamespaces();
   }
 
   public void RunAllTests()
