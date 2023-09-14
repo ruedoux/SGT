@@ -1,62 +1,142 @@
+using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+
 namespace SGT;
 
-using System.Diagnostics;
-using Godot;
-
-internal class Runner
+internal class Runner : RunnerTemplate
 {
-  private readonly GodotTestRoot godotTestRoot;
+  private readonly string[] namespaces;
 
-  internal Runner(GodotTestRoot godotTestRoot)
+  internal Runner(GodotTestRoot godotTestRoot, Logger logger, string[] namespaces)
+    : base(godotTestRoot, logger)
   {
-    this.godotTestRoot = godotTestRoot;
+    this.namespaces = namespaces;
   }
 
-  public bool RunTestsInNamespaces(string[] namespaces)
+  public override bool Run()
   {
     if (!AssemblyExtractor.ContainsExistingNamespaces(namespaces))
     {
       throw new TestSetupException(
         "Failed to start test becuase provided config contains invalid namespace.");
     }
-    if (namespaces.IsEmpty())
+    if (namespaces.Count() == 0)
     {
       throw new TestSetupException(
         "Failed to start test becuase provided no namespaces.");
     }
 
-    bool testsPassed = true;
-
-    godotTestRoot.logger.StartBlock(MessageTemplates.GetRunAll(namespaces));
-    var stopwatch = Stopwatch.StartNew();
-    foreach (string namespaceName in namespaces)
+    bool isPassed = true;
+    isPassed &= RunBlockWithLog(MessageTemplates.ListToString(namespaces), () =>
     {
-      testsPassed &= RunTestsInNamespace(namespaceName);
-    }
-    Message endMessage = testsPassed
-      ? MessageTemplates.GetEndSuccessAll(stopwatch.ElapsedMilliseconds)
-      : MessageTemplates.GetEndFailedAll(stopwatch.ElapsedMilliseconds);
-    godotTestRoot.logger.EndBlock(endMessage);
+      foreach (string namespaceName in namespaces)
+      {
+        isPassed &= RunNamespace(namespaceName);
+      }
+      return isPassed;
+    });
 
-    return testsPassed;
+    return isPassed;
   }
 
-  private bool RunTestsInNamespace(string namespaceName)
+  private bool RunNamespace(string namespaceName)
   {
-    bool testsPassed = true;
     var testObjects = AssemblyExtractor.GetTestObjectsInNamespace(namespaceName);
-    var stopwatch = Stopwatch.StartNew();
 
-    godotTestRoot.logger.StartBlock(MessageTemplates.GetRunNamespace(namespaceName));
-    foreach (var instance in testObjects)
+    bool isPassed = true;
+    isPassed &= RunBlockWithLog(MessageTemplates.ListToString(namespaces), () =>
     {
-      testsPassed &= new TestObjectRunner(
-          godotTestRoot, instance).Run();
-    }
-    godotTestRoot.logger.EndBlock(
-      MessageTemplates.GetSuitResultMessage(
-        namespaceName, stopwatch.ElapsedMilliseconds, testsPassed));
+      foreach (var testObject in testObjects)
+      {
+        testObject.godotTestRoot = godotTestRoot;
+        isPassed &= RunClass(testObject);
+      }
+      return isPassed;
+    });
 
-    return testsPassed;
+    return isPassed;
+  }
+
+  private bool RunClass(SimpleTestClass testObject)
+  {
+    var allMethods = testObject.GetType().GetMethods(
+      BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+    var simpleTestMethods = MethodClassifier
+      .GetAllAttributeMethods<SimpleTestMethod>(allMethods);
+
+    if (simpleTestMethods.Count == 0) { return true; }
+
+    bool isPassed = true;
+    isPassed &= RunBlockWithLog(MessageTemplates.ListToString(namespaces), () =>
+    {
+      foreach (var method in simpleTestMethods)
+      {
+        isPassed &= RunMethod(method, allMethods, testObject);
+      }
+      return isPassed;
+    });
+
+    return isPassed;
+  }
+
+  private bool RunMethod(
+    MethodInfo thisMethod, MethodInfo[] allMethods, SimpleTestClass testObject)
+  {
+    bool isPassed = true;
+    var methodStopwatch = Stopwatch.StartNew();
+
+    var testRepeats = thisMethod.GetCustomAttribute<SimpleTestMethod>().repeatTest;
+    try
+    {
+      RunHelperMethod<SimpleBeforeAll>(allMethods, testObject);
+      for (uint i = 0; i < testRepeats; i++)
+      {
+        RunHelperMethod<SimpleBeforeEach>(allMethods, testObject);
+        RunAsyncTestMethod(thisMethod, testObject).GetAwaiter().GetResult();
+        RunHelperMethod<SimpleAfterEach>(allMethods, testObject);
+        testObject.CleanUpTestRootChildNodes();
+      }
+      RunHelperMethod<SimpleAfterAll>(allMethods, testObject);
+      isPassed &= true;
+      logger.Log(MessageTemplates.GetResultMessage(
+        thisMethod.Name, methodStopwatch.ElapsedMilliseconds, isPassed));
+    }
+    catch (TimeoutException)
+    {
+      isPassed &= false;
+      logger.Log(MessageTemplates.GetTimeoutMessage(thisMethod.Name));
+    }
+    catch (Exception ex)
+    {
+      isPassed &= false;
+      logger.Log(MessageTemplates.GetResultMessage(
+        thisMethod.Name, methodStopwatch.ElapsedMilliseconds, isPassed));
+      logger.LogException(ex);
+    }
+
+    return isPassed;
+  }
+
+  private async Task RunAsyncTestMethod(
+    MethodInfo thisMethod, SimpleTestClass testObject)
+  {
+    await Task.Run(() => thisMethod.Invoke(testObject, null))
+        .WaitAsync(TimeSpan.FromMilliseconds(Config.testTimeoutTimeMs));
+  }
+
+  private void RunHelperMethod<T>(
+    MethodInfo[] allMethods, SimpleTestClass testObject) where T : Attribute
+  {
+    var helperMethodInfo = MethodClassifier.GetSingleAttributeMethod<T>(
+      allMethods, testObject);
+
+    if (helperMethodInfo != null)
+    {
+      Task.Run(() => helperMethodInfo.Invoke(testObject, null))
+          .Wait(TimeSpan.FromMilliseconds(Config.testTimeoutTimeMs));
+    }
   }
 }

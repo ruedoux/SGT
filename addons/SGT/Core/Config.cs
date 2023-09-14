@@ -1,7 +1,7 @@
 
 namespace SGT;
 
-public static class SGTConfig
+public static class Config
 {
   public static long testTimeoutTimeMs = 60_000;
 }

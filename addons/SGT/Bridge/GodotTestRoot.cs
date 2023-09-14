@@ -4,10 +4,7 @@ using Godot;
 
 public partial class GodotTestRoot : Control
 {
-
-  internal Runner runner;
   public Logger logger = new();
-
 
   public GodotTestRoot()
   {
@@ -16,8 +13,8 @@ public partial class GodotTestRoot : Control
 
   public void RunTestsInNamespaces(string[] namespaces)
   {
-    runner ??= new(this);
-    Task.Run(() => runner.RunTestsInNamespaces(namespaces));
+    Runner runner = new(this, logger, namespaces);
+    Task.Run(() => runner.Run());
   }
 
   public void DeleteAllChildren()

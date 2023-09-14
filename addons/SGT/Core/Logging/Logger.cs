@@ -21,11 +21,10 @@ public class Logger
     string[] lines = ex.InnerException.ToString()
       .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-    Log(Message.GetError(
-      "", Message.SUIT.ERROR_INFORMATION, ex.InnerException.Message));
+    Log(Message.GetError("", ex.InnerException.Message));
     foreach (string line in lines)
     {
-      Log(Message.GetError("", Message.SUIT.ERROR_INFORMATION, line));
+      Log(Message.GetError("", line));
     }
   }
 
