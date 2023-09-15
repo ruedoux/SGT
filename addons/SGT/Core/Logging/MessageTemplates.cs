@@ -3,10 +3,10 @@ namespace SGT;
 
 internal static class MessageTemplates
 {
-  private const string START_INDICATOR = "[START]";
-  private const string FAILED_INDICATOR = "[FAILED]";
-  private const string PASSED_INDICATOR = "[PASSED]";
-  private const string TIMEOUT_INDICATOR = "[TIMEOUT]";
+  private const string START_INDICATOR = "[START] ";
+  private const string FAILED_INDICATOR = "[FAILED] ";
+  private const string PASSED_INDICATOR = "[PASSED] ";
+  private const string TIMEOUT_INDICATOR = "[TIMEOUT] ";
 
   public static Message GetStartMessage(string name)
   {

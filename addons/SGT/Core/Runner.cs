@@ -30,7 +30,8 @@ internal class Runner : RunnerTemplate
     }
 
     bool isPassed = true;
-    isPassed &= RunBlockWithLog(MessageTemplates.ListToString(namespaces), () =>
+    string allNamespaces = $"Namespaces to run: {MessageTemplates.ListToString(namespaces)}";
+    isPassed &= RunBlockWithLog(allNamespaces, () =>
     {
       foreach (string namespaceName in namespaces)
       {
@@ -47,7 +48,8 @@ internal class Runner : RunnerTemplate
     var testObjects = AssemblyExtractor.GetTestObjectsInNamespace(namespaceName);
 
     bool isPassed = true;
-    isPassed &= RunBlockWithLog(MessageTemplates.ListToString(namespaces), () =>
+    string namespaceToRun = $"Running namespace: {namespaceName}";
+    isPassed &= RunBlockWithLog(namespaceToRun, () =>
     {
       foreach (var testObject in testObjects)
       {
@@ -70,7 +72,8 @@ internal class Runner : RunnerTemplate
     if (simpleTestMethods.Count == 0) { return true; }
 
     bool isPassed = true;
-    isPassed &= RunBlockWithLog(MessageTemplates.ListToString(namespaces), () =>
+    string classToRun = $"Running class: {testObject.GetType().Name}";
+    isPassed &= RunBlockWithLog(classToRun, () =>
     {
       foreach (var method in simpleTestMethods)
       {
