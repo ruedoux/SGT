@@ -8,7 +8,7 @@ public partial class GodotTestRoot : Control
 
   public GodotTestRoot()
   {
-    logger.allLogObservers.AddObservers(GD.Print);
+    logger.messageLogObservers.AddObservers(new MessagePrinter(GD.Print).Print);
   }
 
   public void RunTestsInNamespaces(string[] namespaces)

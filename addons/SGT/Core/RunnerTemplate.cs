@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 internal abstract class RunnerTemplate
 {
-  private readonly Stopwatch stopwatch = new();
+  private Stopwatch stopwatch;
   public readonly GodotTestRoot godotTestRoot;
   protected Logger logger;
 
@@ -17,13 +17,21 @@ internal abstract class RunnerTemplate
 
   public abstract bool Run();
 
-  protected bool RunBlockWithLog(string name, Func<bool> action)
+  protected bool RunSuiteWithLog(
+    string name, Func<bool> action)
   {
-    stopwatch.Start();
-    logger.StartBlock(MessageTemplates.GetStartMessage(name));
+    stopwatch = Stopwatch.StartNew();
+
+    logger.Log(new Message(
+      Message.Severity.INFO, Message.SuiteType.START_SUITE, name));
     bool isPassed = action();
-    logger.EndBlock(MessageTemplates.GetResultMessage(name, GetTimeTookMs(), isPassed));
-    stopwatch.Stop();
+
+    Message.Severity severity = isPassed
+      ? Message.Severity.PASSED
+      : Message.Severity.FAILED;
+
+    logger.Log(new Message(
+      severity, Message.SuiteType.END_SUITE, name, GetTimeTookMs()));
 
     return isPassed;
   }

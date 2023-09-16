@@ -30,8 +30,8 @@ internal class Runner : RunnerTemplate
     }
 
     bool isPassed = true;
-    string allNamespaces = $"Namespaces to run: {MessageTemplates.ListToString(namespaces)}";
-    isPassed &= RunBlockWithLog(allNamespaces, () =>
+    string allNamespaces = $"Namespaces to run: {string.Join(", ", namespaces)}";
+    isPassed &= RunSuiteWithLog(allNamespaces, () =>
     {
       foreach (string namespaceName in namespaces)
       {
@@ -49,7 +49,7 @@ internal class Runner : RunnerTemplate
 
     bool isPassed = true;
     string namespaceToRun = $"Running namespace: {namespaceName}";
-    isPassed &= RunBlockWithLog(namespaceToRun, () =>
+    isPassed &= RunSuiteWithLog(namespaceToRun, () =>
     {
       foreach (var testObject in testObjects)
       {
@@ -73,7 +73,7 @@ internal class Runner : RunnerTemplate
 
     bool isPassed = true;
     string classToRun = $"Running class: {testObject.GetType().Name}";
-    isPassed &= RunBlockWithLog(classToRun, () =>
+    isPassed &= RunSuiteWithLog(classToRun, () =>
     {
       foreach (var method in simpleTestMethods)
       {
@@ -104,20 +104,30 @@ internal class Runner : RunnerTemplate
       }
       RunHelperMethod<SimpleAfterAll>(allMethods, testObject);
       isPassed &= true;
-      logger.Log(MessageTemplates.GetResultMessage(
-        thisMethod.Name, methodStopwatch.ElapsedMilliseconds, isPassed));
+      logger.Log(new Message(
+        Message.Severity.PASSED,
+        Message.SuiteType.METHOD,
+        thisMethod.Name,
+        methodStopwatch.ElapsedMilliseconds));
     }
     catch (TimeoutException)
     {
       isPassed &= false;
-      logger.Log(MessageTemplates.GetTimeoutMessage(thisMethod.Name));
+      logger.Log(new Message(
+        Message.Severity.TIMEOUT,
+        Message.SuiteType.METHOD,
+        thisMethod.Name,
+        methodStopwatch.ElapsedMilliseconds));
     }
     catch (Exception ex)
     {
       isPassed &= false;
-      logger.Log(MessageTemplates.GetResultMessage(
-        thisMethod.Name, methodStopwatch.ElapsedMilliseconds, isPassed));
-      logger.LogException(ex);
+      logger.Log(new Message(
+        Message.Severity.FAILED,
+        Message.SuiteType.METHOD,
+        thisMethod.Name,
+        methodStopwatch.ElapsedMilliseconds,
+        ex.ToString()));
     }
 
     return isPassed;

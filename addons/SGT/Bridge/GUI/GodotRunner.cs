@@ -6,7 +6,9 @@ using Godot;
 public partial class GodotRunner : Control
 {
   private readonly GodotTestRoot godotTestRoot = new();
+  private readonly MessagePrinter messagePrinter = new();
   private RichTextLabel output;
+
 
   public override void _Ready()
   {
@@ -29,32 +31,29 @@ public partial class GodotRunner : Control
 
   public void UpdateLog(Message message)
   {
-    string prefix = message.GetPrefix();
+    string bbcode = "";
 
-    if (message.GetMessageType() == Message.TYPE.SUCCESS)
+    if (message.severity == Message.Severity.PASSED)
     {
-      prefix = AddBBCodeColor(prefix, "Lawngreen");
+      bbcode = "Lawngreen";
     }
-    else if (message.GetMessageType() == Message.TYPE.INFO)
+    else if (message.severity == Message.Severity.INFO)
     {
-      prefix = AddBBCodeColor(prefix, "Deepskyblue");
+      bbcode = "Deepskyblue";
     }
-    else if (message.GetMessageType() == Message.TYPE.ERROR)
+    else if (message.severity == Message.Severity.FAILED)
     {
-      prefix = AddBBCodeColor(prefix, "Red");
+      bbcode = "Red";
     }
-    else if (message.GetMessageType() == Message.TYPE.WARNING)
+    else if (message.severity == Message.Severity.TIMEOUT)
     {
-      prefix = AddBBCodeColor(prefix, "Orange");
+      bbcode = "Orange";
     }
 
     output.CallDeferred(
       RichTextLabel.MethodName.AppendText,
-      message.GetIndentation() + prefix + message.GetText() + "\n");
+      messagePrinter.GetAsString(message, bbcode) + '\n');
   }
 
-  private string AddBBCodeColor(string text, string color)
-  {
-    return $"[color={color}]{text}[/color]";
-  }
+
 }
