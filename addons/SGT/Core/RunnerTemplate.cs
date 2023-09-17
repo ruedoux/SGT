@@ -18,12 +18,12 @@ internal abstract class RunnerTemplate
   public abstract bool Run();
 
   protected bool RunSuiteWithLog(
-    string name, Func<bool> action)
+    string name, Message.SuiteKind suiteKind, Func<bool> action)
   {
     stopwatch = Stopwatch.StartNew();
 
     logger.Log(new Message(
-      Message.Severity.INFO, Message.SuiteType.START_SUITE, name));
+      Message.Severity.INFO, Message.SuiteType.START_SUITE, suiteKind, name));
     bool isPassed = action();
 
     Message.Severity severity = isPassed
@@ -31,7 +31,7 @@ internal abstract class RunnerTemplate
       : Message.Severity.FAILED;
 
     logger.Log(new Message(
-      severity, Message.SuiteType.END_SUITE, name, GetTimeTookMs()));
+      severity, Message.SuiteType.END_SUITE, suiteKind, name, GetTimeTookMs()));
 
     return isPassed;
   }

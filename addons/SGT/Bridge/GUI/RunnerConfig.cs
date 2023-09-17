@@ -8,7 +8,7 @@ public class RunnerConfig
 {
   private const string ARR_DELIMETER = ", ";
   public static string savePath = ProjectSettings.GlobalizePath(
-    "res://addons/SGT/Data/RunnerConfig.json");
+    "res://addons/SGT/Temp/RunnerConfig.json");
 
   public string[] namespaces;
 

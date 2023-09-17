@@ -30,8 +30,8 @@ internal class Runner : RunnerTemplate
     }
 
     bool isPassed = true;
-    string allNamespaces = $"Namespaces to run: {string.Join(", ", namespaces)}";
-    isPassed &= RunSuiteWithLog(allNamespaces, () =>
+    string allNamespaces = $"({string.Join(", ", namespaces)})";
+    isPassed &= RunSuiteWithLog(allNamespaces, Message.SuiteKind.ALL, () =>
     {
       foreach (string namespaceName in namespaces)
       {
@@ -48,8 +48,7 @@ internal class Runner : RunnerTemplate
     var testObjects = AssemblyExtractor.GetTestObjectsInNamespace(namespaceName);
 
     bool isPassed = true;
-    string namespaceToRun = $"Running namespace: {namespaceName}";
-    isPassed &= RunSuiteWithLog(namespaceToRun, () =>
+    isPassed &= RunSuiteWithLog(namespaceName, Message.SuiteKind.NAMESPACE, () =>
     {
       foreach (var testObject in testObjects)
       {
@@ -72,8 +71,7 @@ internal class Runner : RunnerTemplate
     if (simpleTestMethods.Count == 0) { return true; }
 
     bool isPassed = true;
-    string classToRun = $"Running class: {testObject.GetType().Name}";
-    isPassed &= RunSuiteWithLog(classToRun, () =>
+    isPassed &= RunSuiteWithLog(testObject.GetType().Name, Message.SuiteKind.CLASS, () =>
     {
       foreach (var method in simpleTestMethods)
       {
@@ -106,7 +104,8 @@ internal class Runner : RunnerTemplate
       isPassed &= true;
       logger.Log(new Message(
         Message.Severity.PASSED,
-        Message.SuiteType.METHOD,
+        Message.SuiteType.NONE,
+        Message.SuiteKind.METHOD,
         thisMethod.Name,
         methodStopwatch.ElapsedMilliseconds));
     }
@@ -115,7 +114,8 @@ internal class Runner : RunnerTemplate
       isPassed &= false;
       logger.Log(new Message(
         Message.Severity.TIMEOUT,
-        Message.SuiteType.METHOD,
+        Message.SuiteType.NONE,
+        Message.SuiteKind.METHOD,
         thisMethod.Name,
         methodStopwatch.ElapsedMilliseconds));
     }
@@ -124,10 +124,11 @@ internal class Runner : RunnerTemplate
       isPassed &= false;
       logger.Log(new Message(
         Message.Severity.FAILED,
-        Message.SuiteType.METHOD,
+        Message.SuiteType.NONE,
+        Message.SuiteKind.METHOD,
         thisMethod.Name,
         methodStopwatch.ElapsedMilliseconds,
-        ex.ToString()));
+        ex.InnerException.ToString()));
     }
 
     return isPassed;
