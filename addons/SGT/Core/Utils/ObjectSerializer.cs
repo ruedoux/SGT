@@ -2,16 +2,9 @@ namespace SGT;
 using System.IO;
 using System.Xml.Serialization;
 
-public class ObjectSerializer<T>
+public static class ObjectSerializer
 {
-  private readonly string filePath;
-
-  public ObjectSerializer(string filePath)
-  {
-    this.filePath = filePath;
-  }
-
-  public void SaveToFile(T objectToSerialize)
+  public static void SaveToFile<T>(string filePath, T objectToSerialize)
   {
     if (File.Exists(filePath))
     {
@@ -23,7 +16,7 @@ public class ObjectSerializer<T>
     xmlSerializer.Serialize(writer, objectToSerialize);
   }
 
-  public T LoadFromFile()
+  public static T LoadFromFile<T>(string filePath)
   {
     if (!File.Exists(filePath))
     {
@@ -33,7 +26,7 @@ public class ObjectSerializer<T>
     XmlSerializer xmlSerializer = new(typeof(T));
     T loadedObject;
 
-    using (var reader = new StreamReader(Config.runnerConfigPath))
+    using (var reader = new StreamReader(filePath))
     {
       loadedObject = (T)xmlSerializer.Deserialize(reader);
     }

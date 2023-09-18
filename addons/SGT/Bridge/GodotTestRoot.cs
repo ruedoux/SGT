@@ -28,8 +28,7 @@ public partial class GodotTestRoot : Control
 
   internal void FinalizeTest()
   {
-    ObjectSerializer<MessageAgregator> objectSerializer = new(Config.testResultsPath);
-    objectSerializer.SaveToFile(logger.messageAgregator);
+    ObjectSerializer.SaveToFile(Config.testResultsPath, logger.messageAgregator);
     logger.Log(new Message(
       Message.Severity.INFO,
       Message.SuiteType.NONE,

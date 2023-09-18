@@ -2,6 +2,8 @@
 namespace SGT;
 
 using System;
+using System.Diagnostics;
+using System.IO;
 using Godot;
 
 
@@ -13,6 +15,7 @@ internal partial class BottomPanel : Control
   private Button runAllbutton;
   private Button runSelected;
   private OptionButton namespaceSelectButton;
+  private bool tryLoadTestLogs = false;
 
   public void SetInterface(EditorInterface editorInterface)
   {
@@ -26,7 +29,7 @@ internal partial class BottomPanel : Control
     runSelected = GetNode<Button>(
       "Console/RunContainer/RunSelected");
     logBoard = GetNode<RichTextLabel>(
-      "Console/LogContainer/LogBoard");
+      "Console/Panel/Output");
     namespaceSelectButton = GetNode<OptionButton>(
       "Console/RunContainer/NamespaceSelect");
 
@@ -39,46 +42,59 @@ internal partial class BottomPanel : Control
     namespaceSelectButton.Connect(
       OptionButton.SignalName.Pressed,
       new Callable(this, nameof(UpdateNamespaces)));
+    namespaceSelectButton.Connect(
+      Control.SignalName.VisibilityChanged,
+      new Callable(this, nameof(LoadTestResults)));
     UpdateNamespaces();
   }
 
   public void RunAllTests()
   {
-    logBoard.Clear();
     PlayTestScene(AssemblyExtractor.GetAllTestNamespaces().ToArray());
   }
 
   public void RunSelectedTests()
   {
-    logBoard.Clear();
     PlayTestScene(new string[] { GetSelectedNamespace() });
-  }
-
-  public void UpdateLog(string log)
-  {
-    logBoard.AppendText(log);
   }
 
   private void PlayTestScene(string[] namespaces)
   {
+    logBoard.Clear();
     UpdateLog("Running...");
 
-    RunnerConfig runnerConfig = new()
-    {
-      namespaces = namespaces
-    };
-
+    RunnerConfig runnerConfig = new(namespaces);
     try
     {
-      ObjectSerializer<RunnerConfig> objectSerializer = new(Config.runnerConfigPath);
-      objectSerializer.SaveToFile(runnerConfig);
+      File.Delete(Config.testResultsPath);
+      ObjectSerializer.SaveToFile(Config.runnerConfigPath, runnerConfig);
       editorInterface.PlayCustomScene(
         "res://addons/SGT/Bridge/GUI/GodotRunner.tscn");
+
+      tryLoadTestLogs = true;
     }
     catch (Exception ex)
     {
-      throw new TestSetupException("Failed to save config file!", ex);
+      throw new TestSetupException("Failed to save runner config file!", ex);
     }
+  }
+
+  private void LoadTestResults()
+  {
+    if (!File.Exists(Config.testResultsPath) || !tryLoadTestLogs)
+      return;
+
+    logBoard.Clear();
+    var messageAggregator = ObjectSerializer.LoadFromFile<MessageAgregator>(
+      Config.testResultsPath);
+
+    MessagePrinter messagePrinter = new(UpdateLog, true);
+    foreach (var message in messageAggregator.messages)
+    {
+      messagePrinter.Print(message);
+    }
+
+    tryLoadTestLogs = false;
   }
 
   private string GetSelectedNamespace()
@@ -95,6 +111,11 @@ internal partial class BottomPanel : Control
     {
       namespaceSelectButton.AddItem(namespaceName);
     }
+  }
+
+  private void UpdateLog(string message)
+  {
+    logBoard.AppendText(message += "\n");
   }
 }
 #endif
