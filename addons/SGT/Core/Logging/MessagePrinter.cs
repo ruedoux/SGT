@@ -28,7 +28,7 @@ public class MessagePrinter
 
     if (message.suiteType == Message.SuiteType.NONE)
     {
-      PrintBasedOnTab($"{GetLeftBar(message.suiteType, message.severity)} {message.GetInfo()} <{message.GetTimeTook()}>{message.GetDetails(true)}");
+      PrintBasedOnTab($"{GetLeftBar(message.suiteType, message.severity)} {message.GetInfo()} {message.GetTimeTook()}{message.GetDetails(true)}");
     }
     else if (message.suiteType == Message.SuiteType.START_SUITE)
       StartSuite(message);

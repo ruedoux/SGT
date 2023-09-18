@@ -13,6 +13,8 @@ public partial class SGTPlugin : EditorPlugin
   {
     bottomPanel = GD.Load<PackedScene>(BOTTOM_PANEL_PATH)
       .InstantiateOrNull<BottomPanel>();
+    SetDefaultConfig();
+
     if (bottomPanel != null)
     {
       AddControlToBottomPanel(bottomPanel, "SGT");
@@ -30,6 +32,12 @@ public partial class SGTPlugin : EditorPlugin
     RemoveControlFromBottomPanel(bottomPanel);
     bottomPanel.QueueFree();
     GD.Print("Unloaded SGT plugin.");
+  }
+
+  private void SetDefaultConfig()
+  {
+    Config.runnerConfigPath = ProjectSettings.GlobalizePath(
+      "res://addons/SGT/Temp/RunnerConfig.json");
   }
 }
 #endif

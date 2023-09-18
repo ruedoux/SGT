@@ -7,14 +7,16 @@ public class Message
 {
   public enum Severity { INFO, PASSED, FAILED, TIMEOUT }
   public enum SuiteType { NONE, START_SUITE, END_SUITE }
-  public enum SuiteKind { METHOD, CLASS, NAMESPACE, ALL }
+  public enum SuiteKind { INFO, METHOD, CLASS, NAMESPACE, ALL }
 
-  public readonly Severity severity;
-  public readonly SuiteType suiteType;
-  public readonly SuiteKind suiteKind;
-  public readonly string text;
-  public readonly long timeTook;
-  public readonly string details;
+  public Severity severity;
+  public SuiteType suiteType;
+  public SuiteKind suiteKind;
+  public string text;
+  public long timeTook;
+  public string details;
+
+  private Message() { }
 
   public Message(
     Severity severity,
@@ -53,5 +55,5 @@ public class Message
   }
 
   public string GetInfo() => text;
-  public string GetTimeTook() => timeTook > -1 ? $"{timeTook} ms" : "";
+  public string GetTimeTook() => timeTook > -1 ? $"<{timeTook} ms>" : "";
 }

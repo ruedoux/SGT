@@ -70,7 +70,8 @@ internal partial class BottomPanel : Control
 
     try
     {
-      runnerConfig.SaveToFile();
+      ObjectSerializer<RunnerConfig> objectSerializer = new(Config.runnerConfigPath);
+      objectSerializer.SaveToFile(runnerConfig);
       editorInterface.PlayCustomScene(
         "res://addons/SGT/Bridge/GUI/GodotRunner.tscn");
     }

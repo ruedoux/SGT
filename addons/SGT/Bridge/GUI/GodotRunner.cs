@@ -19,10 +19,10 @@ public partial class GodotRunner : Control
     output = GetNode<RichTextLabel>("Panel/Output");
     AddChild(godotTestRoot);
 
-    RunnerConfig runnerConfig = new();
+    ObjectSerializer<RunnerConfig> objectSerializer = new(Config.runnerConfigPath);
     try
     {
-      runnerConfig = RunnerConfig.LoadFromFile();
+      RunnerConfig runnerConfig = objectSerializer.LoadFromFile();
       godotTestRoot.RunTestsInNamespaces(runnerConfig.namespaces);
     }
     catch (Exception ex)

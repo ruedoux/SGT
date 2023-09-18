@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Godot;
 
 namespace SGT;
 
@@ -17,6 +18,19 @@ internal class Runner : RunnerTemplate
   }
 
   public override bool Run()
+  {
+    try
+    {
+      return RunAllNamespaces();
+    }
+    catch (Exception ex)
+    {
+      GD.PushError(ex);
+    }
+    return false;
+  }
+
+  public bool RunAllNamespaces()
   {
     if (!AssemblyExtractor.ContainsExistingNamespaces(namespaces))
     {
@@ -39,6 +53,8 @@ internal class Runner : RunnerTemplate
       }
       return isPassed;
     });
+
+    godotTestRoot.FinalizeTest();
 
     return isPassed;
   }
