@@ -19,6 +19,8 @@ public class MessagePrinter
 
     SeverityColorMap.Add(Message.Severity.PASSED, "Lawngreen");
     SeverityColorMap.Add(Message.Severity.FAILED, "Red");
+    SeverityColorMap.Add(Message.Severity.TIMEOUT, "Red");
+    SeverityColorMap.Add(Message.Severity.INFO, "Skyblue");
   }
 
   public void Print(Message message)
