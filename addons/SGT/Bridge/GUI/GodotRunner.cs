@@ -16,8 +16,8 @@ public partial class GodotRunner : Control
 
   public override void _Ready()
   {
-    output = GetNode<RichTextLabel>("Panel/Output");
-    AddChild(godotTestRoot);
+    output = GetNode<RichTextLabel>("Window/Panel/Output");
+    GetTree().Root.CallDeferred(Node.MethodName.AddChild, godotTestRoot);
 
     try
     {

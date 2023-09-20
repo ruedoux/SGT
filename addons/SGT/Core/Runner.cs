@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Godot;
 
 namespace SGT;
 
@@ -25,7 +24,13 @@ internal class Runner : RunnerTemplate
     }
     catch (Exception ex)
     {
-      GD.PushError(ex);
+      logger.Log(new Message(
+        Message.Severity.FAILED,
+        Message.SuiteType.NONE,
+        Message.SuiteKind.INFO,
+        ex.Message,
+        -1,
+        ex.StackTrace));
     }
     return false;
   }

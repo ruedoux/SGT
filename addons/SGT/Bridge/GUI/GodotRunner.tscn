@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://b64i3nhcn1xcx"]
+[gd_scene load_steps=5 format=3 uid="uid://b64i3nhcn1xcx"]
 
 [ext_resource type="Script" path="res://addons/SGT/Bridge/GUI/GodotRunner.cs" id="1_ulb1g"]
+[ext_resource type="Script" path="res://addons/SGT/Bridge/GUI/Window.gd" id="2_6jfyp"]
 [ext_resource type="FontFile" uid="uid://co2f4nutr2cv2" path="res://addons/SGT/Data/SpaceMono-Regular.ttf" id="2_ohtk1"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jn7ws"]
 
 [node name="GodotRunner" type="Control"]
 layout_mode = 3
@@ -12,15 +15,30 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ulb1g")
 
-[node name="Panel" type="Panel" parent="."]
+[node name="Window" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = -172.0
+offset_bottom = -93.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 0
+script = ExtResource("2_6jfyp")
 
-[node name="Output" type="RichTextLabel" parent="Panel"]
+[node name="MoveHook" type="Panel" parent="Window"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.05
+theme_override_styles/panel = SubResource("StyleBoxFlat_jn7ws")
+
+[node name="Panel" type="Panel" parent="Window"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Output" type="RichTextLabel" parent="Window/Panel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
