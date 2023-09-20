@@ -12,6 +12,7 @@ grow_vertical = 2
 script = ExtResource("1_ulkai")
 
 [node name="SomethingVisual" type="ColorRect" parent="."]
+layout_mode = 0
 offset_right = 1151.0
 offset_bottom = 652.0
 size_flags_horizontal = 3

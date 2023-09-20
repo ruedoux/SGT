@@ -47,8 +47,6 @@ Tests are ran by namespace so you can manually run only one namespace at a time 
 
 All calls to godot scene root need to be done via deffered call: `CallTestRootDeffered()`, since tests are being ran async.
 
-For the time being test output is being shown in the console, I'm planning to integrate it in some prettier way, probably something resembling GUT.
-
 Mocking
 ----
 
@@ -75,9 +73,7 @@ Testing class can be in any `.cs` file in your project, I would recommend puttin
 </PropertyGroup>
 ```
 
-**For older versions of godot** everything in `addons/SGT/Bridge/GUI` can be simply deleted because it only serves as GUI and all core parts are written in pure C#. All you need to do to run the tests is to modify `addons/SGT/Core/GodotTestRoot.cs` to be compatible with your version of godot, and simply call `RunTestsInNamespaces(string[] namespaces)`. If you want to run tests for all namespaces you can get them via `AssemblyExtractor.GetAllTestNamespaces().ToArray()`, this function gets all namespaces with tests in your entire project.
+**For older versions of godot** everything in `addons/SGT/Bridge/GUI` can be simply deleted because it only serves as GUI and all core parts are written in pure C#. All you need to do to run the tests is to modify `addons/SGT/Bridge/GodotTestRoot.cs` to be compatible with your version of godot, and simply call `RunTestsInNamespaces(string[] namespaces)`. If you want to run tests for all namespaces you can get them via `AssemblyExtractor.GetAllTestNamespaces().ToArray()`, this function gets all namespaces with tests in your entire project.
 
 TODO:
-- Make GUI more pleasant to look at.
-- Standarize output, possibly to XML format similar to other testing frameworks.
-
+- Add wiki
