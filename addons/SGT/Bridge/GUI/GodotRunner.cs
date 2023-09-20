@@ -3,7 +3,7 @@ using System;
 using Godot;
 
 
-public partial class GodotRunner : Control
+public partial class GodotRunner : CanvasLayer
 {
   private readonly GodotTestRoot godotTestRoot = new();
   private RichTextLabel output;
@@ -22,7 +22,7 @@ public partial class GodotRunner : Control
     try
     {
       var runnerConfig = ObjectSerializer.LoadFromFile<RunnerConfig>(
-        Config.runnerConfigPath);
+      Config.runnerConfigPath);
       godotTestRoot.RunTestsInNamespaces(runnerConfig.namespaces);
     }
     catch (Exception ex)
