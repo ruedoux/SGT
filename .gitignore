@@ -15,4 +15,5 @@ data_*/
 mono_crash.*.json
 
 addons/SGT/Temp/*
+!addons/SGT/Temp/.gitkeep
 TestingTemp
