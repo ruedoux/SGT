@@ -15,7 +15,7 @@ How to use
 
 Your test class needs to derive from `SimpleTestClass` and test methods needs to have `[SimpleTestMethod]` attribute.
 
-To run the tests you can use runner scene which displays test results in a convenient form, no additional setup is needed for it to work (in 4.1.1 version at least).
+To run the tests you can use [runner scene](https://github.com/RedouxG/SGT/blob/main/addons/SGT/Bridge/GUI/Runner) which displays test results in a convenient form, no additional setup is needed for it to work (in 4.1.1 version at least).
 
 Example test class would look something like this:
 
