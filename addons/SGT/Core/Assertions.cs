@@ -1,6 +1,5 @@
 namespace SGT;
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 public static class Assertions
@@ -21,16 +20,16 @@ public static class Assertions
     }
   }
 
-  public static void AssertEqual(object shouldBe, object isNow)
+  public static void AssertEqual<T>(T shouldBe, T isNow)
   {
     if (!Equals(shouldBe, isNow))
     {
       throw new AssertionException(
-        $"Value is not equal, is: '{shouldBe}', but should be: '{isNow}'.");
+        $"Value is not equal, is: '{isNow}', but should be: '{shouldBe}'.");
     }
   }
 
-  public static void AssertNotEqual(object shouldNotBe, object isNow)
+  public static void AssertNotEqual<T>(T shouldNotBe, T isNow)
   {
     if (Equals(shouldNotBe, isNow))
     {
