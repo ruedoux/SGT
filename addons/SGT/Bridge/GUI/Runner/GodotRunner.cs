@@ -3,19 +3,12 @@ using Godot;
 
 internal partial class GodotRunner : CanvasLayer
 {
-  private readonly GodotTestRoot godotTestRoot = new();
+  private GodotTestRoot godotTestRoot = new();
 
   private RichTextLabel output;
   private Button runAllButton;
   private Button runSelectedButton;
   private OptionButton selectNamespace;
-
-
-  public GodotRunner()
-  {
-    godotTestRoot.logger.messageLogObservers.AddObservers(
-      new MessagePrinter(UpdateLog, true).Print);
-  }
 
   public override void _Ready()
   {
@@ -28,23 +21,16 @@ internal partial class GodotRunner : CanvasLayer
     runSelectedButton.Connect(Button.SignalName.Pressed, new Callable(this, nameof(RunSelected)));
     selectNamespace.Connect(Button.SignalName.Pressed, new Callable(this, nameof(UpdateSelectedNamespaces)));
 
-    GetTree().Root.CallDeferred(Node.MethodName.AddChild, godotTestRoot);
     UpdateSelectedNamespaces();
   }
 
-  public void RunAll()
-  {
-    output.Clear();
-    godotTestRoot.RunTestsInNamespaces(AssemblyExtractor.GetAllTestNamespaces().ToArray());
-  }
+  private void RunAll()
+    => RunTests(AssemblyExtractor.GetAllTestNamespaces().ToArray());
 
-  public void RunSelected()
-  {
-    output.Clear();
-    godotTestRoot.RunTestsInNamespaces(new string[] { selectNamespace.GetItemText(selectNamespace.GetSelectedId()) });
-  }
+  private void RunSelected()
+    => RunTests(new string[] { selectNamespace.GetItemText(selectNamespace.GetSelectedId()) });
 
-  public void UpdateSelectedNamespaces()
+  private void UpdateSelectedNamespaces()
   {
     selectNamespace.Clear();
 
@@ -54,8 +40,22 @@ internal partial class GodotRunner : CanvasLayer
     }
   }
 
-  public void UpdateLog(string message)
+  private void UpdateLog(string message)
+    => output.CallDeferred(RichTextLabel.MethodName.AppendText, message += "\n");
+
+  private void RunTests(string[] namespaces)
   {
-    output.CallDeferred(RichTextLabel.MethodName.AppendText, message += "\n");
+    if (!godotTestRoot.testsFinished && godotTestRoot.testsStarted)
+      return;
+
+    godotTestRoot.QueueFree();
+    output.Clear();
+    godotTestRoot = new();
+    GetTree().Root.AddChild(godotTestRoot);
+
+    godotTestRoot.logger.messageLogObservers.AddObservers(
+      new MessagePrinter(UpdateLog, true).Print);
+
+    godotTestRoot.RunTestsInNamespaces(namespaces);
   }
 }

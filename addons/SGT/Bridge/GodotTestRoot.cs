@@ -6,6 +6,8 @@ using Godot;
 public partial class GodotTestRoot : Control
 {
   public Logger logger = new();
+  internal bool testsFinished = false;
+  internal bool testsStarted = false;
 
   public GodotTestRoot()
   {
@@ -16,6 +18,7 @@ public partial class GodotTestRoot : Control
   {
     Runner runner = new(this, logger, namespaces);
     Task.Run(() => runner.Run());
+    testsStarted = true;
   }
 
   public void DeleteAllChildren()
@@ -34,5 +37,6 @@ public partial class GodotTestRoot : Control
       Message.SuiteType.NONE,
       Message.SuiteKind.INFO,
       $"Saved test results to file: {Config.testResultsPath}"));
+    testsFinished = true;
   }
 }

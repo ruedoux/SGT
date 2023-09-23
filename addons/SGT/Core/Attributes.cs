@@ -29,9 +29,15 @@ public abstract class SimpleTestClass
     godotTestRoot.CallDeferred(methodName, args);
   }
 
-  public T LoadNode<T>(string pathToNode) where T : Node
+  public T LoadSceneInstance<T>(string path) where T : class
   {
-    return GD.Load<PackedScene>(pathToNode).InstantiateOrNull<T>();
+    var scene = ResourceLoader.Load<PackedScene>(path, null, ResourceLoader.CacheMode.Replace);
+    return scene.InstantiateOrNull<T>();
+  }
+
+  public void FailTest(string faileCause = "")
+  {
+    throw new AssertionException($"Failed test. {faileCause}");
   }
 
   /// <summary> 

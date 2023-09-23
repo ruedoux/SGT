@@ -9,7 +9,8 @@ public class SceneTest : SimpleTestClass
   public void Test()
   {
     // Given
-    var loadedNode = LoadNode<TestNode>("res://Examples/Scenes/TestNode.tscn");
+    var loadedNode = LoadSceneInstance<TestNode>(
+      "res://Examples/Scenes/TestNode.tscn");
 
     // When
     loadedNode.shouldBe10 = 123;
