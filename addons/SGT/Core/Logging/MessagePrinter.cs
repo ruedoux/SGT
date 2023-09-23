@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace SGT;
 
 /// <summary> 
-/// Converts a message flow into console friendly output
+/// Converts a message flow into console friendly PrintOutput
 /// </summary>
 public class MessagePrinter
 {
@@ -11,6 +11,7 @@ public class MessagePrinter
   private readonly Dictionary<Message.Severity, string> SeverityColorMap = new();
   private readonly bool addBBCode;
   private bool shouldBeTabbed = false; // switched on/off based on namespace
+
 
   public MessagePrinter(Action<string> printFunction, bool addBBCode)
   {
@@ -39,15 +40,14 @@ public class MessagePrinter
 
     if (message.suiteKind == Message.SuiteKind.NAMESPACE && message.suiteType == Message.SuiteType.START_SUITE)
       shouldBeTabbed = true;
-
   }
 
   private void PrintBasedOnTab(string message)
   {
     if (shouldBeTabbed)
-      printFunction($"\t {message}");
+      PrintOutput($"\t {message}");
     else
-      printFunction(message);
+      PrintOutput(message);
   }
 
   private void StartSuite(Message message)
@@ -55,7 +55,7 @@ public class MessagePrinter
     PrintBasedOnTab($"{GetLeftBar(message.suiteType, message.severity)} Starting {message.suiteKind.ToString().ToLower()} {message.GetInfo()}");
     if (message.suiteKind != Message.SuiteKind.CLASS)
     {
-      printFunction("");
+      PrintOutput("");
     }
   }
 
@@ -66,7 +66,7 @@ public class MessagePrinter
       PrintBasedOnTab($"{GetLeftBar(message.suiteType, message.severity)} Ending {message.suiteKind.ToString().ToLower()} {message.GetInfo()}");
     }
     PrintSummaryBlock(message);
-    printFunction("");
+    PrintOutput("");
   }
 
   private void PrintSummaryBlock(Message message)
@@ -82,18 +82,18 @@ public class MessagePrinter
     uint barSize = 8,
     char barFiller = '-')
   {
-    string output = "";
+    string PrintOutput = "";
     if (suiteType == Message.SuiteType.START_SUITE || suiteType == Message.SuiteType.END_SUITE)
-      output += '[' + CenterString("", barFiller, barSize) + ']';
+      PrintOutput += '[' + CenterString("", barFiller, barSize) + ']';
     else
-      output += '[' + CenterString(severity.ToString(), barFiller, barSize) + ']';
+      PrintOutput += '[' + CenterString(severity.ToString(), barFiller, barSize) + ']';
 
     if (addBBCode && SeverityColorMap.ContainsKey(severity) && suiteType == Message.SuiteType.NONE)
     {
-      output = AddBBCodeColor(output, SeverityColorMap[severity]);
+      PrintOutput = AddBBCodeColor(PrintOutput, SeverityColorMap[severity]);
     }
 
-    return output;
+    return PrintOutput;
   }
 
   private string CenterString(string inputString, char filler, uint maxSize)
@@ -113,5 +113,10 @@ public class MessagePrinter
     if (string.IsNullOrEmpty(color))
       return text;
     return $"[color={color}]{text}[/color]";
+  }
+
+  private void PrintOutput(string message)
+  {
+    printFunction(message);
   }
 }

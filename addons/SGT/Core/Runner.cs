@@ -37,12 +37,13 @@ internal class Runner : RunnerTemplate
 
   public bool RunAllNamespaces()
   {
-    if (!AssemblyExtractor.ContainsExistingNamespaces(namespaces))
+    var namespacesOk = AssemblyExtractor.ContainsExistingNamespaces(namespaces);
+    if (!namespacesOk.Item1)
     {
       throw new TestSetupException(
-        "Failed to start test becuase provided config contains invalid namespace.");
+        "Failed to start test becuase provided config contains invalid namespaces: " + string.Join(", ", namespacesOk.Item2));
     }
-    if (namespaces.Count() == 0)
+    if (!namespaces.Any())
     {
       throw new TestSetupException(
         "Failed to start test becuase provided no namespaces.");

@@ -1,0 +1,94 @@
+[gd_scene load_steps=6 format=3 uid="uid://b64i3nhcn1xcx"]
+
+[ext_resource type="Script" path="res://addons/SGT/Bridge/GUI/Runner/GodotRunner.cs" id="1_ulb1g"]
+[ext_resource type="Script" path="res://addons/SGT/Bridge/GUI/Runner/Window.gd" id="2_6jfyp"]
+[ext_resource type="FontFile" uid="uid://co2f4nutr2cv2" path="res://addons/SGT/Data/SpaceMono-Regular.ttf" id="2_ohtk1"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jn7ws"]
+bg_color = Color(0.596078, 0.596078, 0.596078, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1b1x1"]
+bg_color = Color(0.596078, 0.596078, 0.596078, 1)
+
+[node name="GodotRunner" type="CanvasLayer"]
+script = ExtResource("1_ulb1g")
+
+[node name="Window" type="VBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = 19.0
+offset_right = -23.0
+offset_bottom = -23.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+script = ExtResource("2_6jfyp")
+
+[node name="MoveHook" type="Panel" parent="Window"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.05
+theme_override_styles/panel = SubResource("StyleBoxFlat_jn7ws")
+
+[node name="OutputPanel" type="Panel" parent="Window"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Output" type="RichTextLabel" parent="Window/OutputPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/normal_font = ExtResource("2_ohtk1")
+scroll_following = true
+
+[node name="ButtonPanel" type="Panel" parent="Window"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.15
+theme_override_styles/panel = SubResource("StyleBoxFlat_1b1x1")
+
+[node name="Margin" type="MarginContainer" parent="Window/ButtonPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBox" type="HBoxContainer" parent="Window/ButtonPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="RunAll" type="Button" parent="Window/ButtonPanel/Margin/HBox"]
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 25
+text = "Run All"
+
+[node name="null" type="BoxContainer" parent="Window/ButtonPanel/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RunSelected" type="Button" parent="Window/ButtonPanel/Margin/HBox"]
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 25
+text = "Run Selected"
+
+[node name="SelectNamespace" type="OptionButton" parent="Window/ButtonPanel/Margin/HBox"]
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 20
+item_count = 1
+popup/item_0/text = "Testnamespace"
+popup/item_0/id = 0

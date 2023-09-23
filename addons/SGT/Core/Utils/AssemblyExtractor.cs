@@ -10,17 +10,23 @@ internal static class AssemblyExtractor
   public static string defaultNamespaceName = "Default";
 
 
-  public static bool ContainsExistingNamespaces(string[] namespaces)
+  public static Tuple<bool, List<string>> ContainsExistingNamespaces(
+    string[] namespaces)
   {
+    List<string> missingNamespaces = new();
+
     string[] existingNamespaces = GetAllTestNamespaces().ToArray();
     foreach (string ns in namespaces)
     {
       if (!existingNamespaces.Contains(ns))
       {
-        return false;
+        missingNamespaces.Add(ns);
       }
     }
-    return true;
+
+    if (!missingNamespaces.Any())
+      return new Tuple<bool, List<string>>(true, missingNamespaces);
+    return new Tuple<bool, List<string>>(false, missingNamespaces);
   }
 
   public static List<SimpleTestClass> GetTestObjectsInNamespace(

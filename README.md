@@ -6,8 +6,6 @@ About
 
 Addon for [Godot](https://github.com/godotengine/godot) that allows you to easily create tests for your C# scripts. Its designed to be as simple to use as possible and have as little dependency issues with different Godot versions.
 
-I would recommend to use this testing addon along with [GUT](https://github.com/bitwes/Gut), Godot nodes have a lot of issues with mocking in C# so if you want to mock something its best to do it in GUT for the time being.
-
 How to use
 -----
 
@@ -17,7 +15,7 @@ How to use
 
 Your test class needs to derive from `SimpleTestClass` and test methods needs to have `[SimpleTestMethod]` attribute.
 
-After turning on the plugin you will be provided with a bottom panel called `SGT` (similar to GUT). Thats it, no additional setup is needed for it to work (in 4.1.1 version at least).
+To run the tests you can use runner scene which displays test results in a convenient form, no additional setup is needed for it to work (in 4.1.1 version at least).
 
 Example test class would look something like this:
 
@@ -68,12 +66,17 @@ Testing class can be in any `.cs` file in your project, I would recommend puttin
 ```xml
 <PropertyGroup>
   <DefaultItemExcludes Condition="'$(Configuration)' == 'ExportRelease'">
-    $(DefaultItemExcludes);YourTestFolderName/**
+    $(DefaultItemExcludes);YourTestFolderName/**;addons/SGT/**
   </DefaultItemExcludes>
 </PropertyGroup>
 ```
 
 **For older versions of godot** everything in `addons/SGT/Bridge/GUI` can be simply deleted because it only serves as GUI and all core parts are written in pure C#. All you need to do to run the tests is to modify `addons/SGT/Bridge/GodotTestRoot.cs` to be compatible with your version of godot, and simply call `RunTestsInNamespaces(string[] namespaces)`. If you want to run tests for all namespaces you can get them via `AssemblyExtractor.GetAllTestNamespaces().ToArray()`, this function gets all namespaces with tests in your entire project.
 
-TODO:
-- Add wiki
+Frequent Q/A
+-----
+Q: Why no bottom panel? \
+A: Bottom panel requires using `[Tool]` attribute for class, and that [doesn't work for mono in 4.x](https://github.com/godotengine/godot/issues/78513)
+
+Q: Any documentation/wiki? \
+A: Work in progress
