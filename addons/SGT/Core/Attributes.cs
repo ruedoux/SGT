@@ -1,5 +1,6 @@
 namespace SGT;
 using System;
+using System.Collections.Generic;
 using Godot;
 
 [AttributeUsage(AttributeTargets.Method)]
@@ -31,13 +32,33 @@ public abstract class SimpleTestClass
 
   public T LoadSceneInstance<T>(string path) where T : class
   {
-    var scene = ResourceLoader.Load<PackedScene>(path, null, ResourceLoader.CacheMode.Replace);
+    var scene = ResourceLoader.Load<PackedScene>(
+      path, null, ResourceLoader.CacheMode.Replace);
     return scene.InstantiateOrNull<T>();
   }
 
   public void FailTest(string faileCause = "")
   {
     throw new AssertionException($"Failed test. {faileCause}");
+  }
+
+  public void TestLog(params object[] msgs)
+  {
+    string output = "";
+    foreach (var msg in msgs)
+      output += msg.ToString();
+
+    godotTestRoot.logger.Log(new Message(
+      Message.Severity.INFO, Message.SuiteType.NONE, Message.SuiteKind.INFO, output));
+  }
+
+  public static string EnumerableToString<T>(
+    IEnumerable<T> enumerable, string delimiter = ", ", int maxLen = 100)
+  {
+    string joinedEnumerable = string.Join(delimiter, enumerable);
+    if (joinedEnumerable.Length > maxLen)
+      joinedEnumerable = joinedEnumerable[..maxLen] + " [...] ";
+    return $"{typeof(T).Name} : [{joinedEnumerable}]";
   }
 
   /// <summary> 

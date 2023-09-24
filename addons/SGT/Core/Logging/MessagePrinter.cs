@@ -5,7 +5,7 @@ namespace SGT;
 /// <summary> 
 /// Converts a message flow into console friendly PrintOutput
 /// </summary>
-public class MessagePrinter
+internal class MessagePrinter
 {
   private readonly Action<string> printFunction;
   private readonly Dictionary<Message.Severity, string> SeverityColorMap = new();

@@ -1,6 +1,6 @@
 namespace SGT;
 
-public class Logger
+internal class Logger
 {
   public ObserverManager<Message> messageLogObservers = new();
   public MessageAgregator messageAgregator = new();

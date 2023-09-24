@@ -3,9 +3,9 @@ namespace SGT;
 using System.Threading.Tasks;
 using Godot;
 
-public partial class GodotTestRoot : Control
+internal partial class GodotTestRoot : Control
 {
-  public Logger logger = new();
+  internal Logger logger = new();
   internal bool testsFinished = false;
   internal bool testsStarted = false;
 
