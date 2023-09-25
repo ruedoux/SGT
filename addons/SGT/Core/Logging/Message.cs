@@ -6,7 +6,7 @@ namespace SGT;
 public class Message
 {
   public enum Severity { INFO, PASSED, FAILED, TIMEOUT }
-  public enum SuiteType { NONE, START_SUITE, END_SUITE }
+  public enum SuiteType { STAY, START_SUITE, END_SUITE }
   public enum SuiteKind { INFO, METHOD, CLASS, NAMESPACE, ALL }
 
   public Severity severity;

@@ -49,7 +49,7 @@ public abstract class SimpleTestClass
       output += msg.ToString();
 
     godotTestRoot.logger.Log(new Message(
-      Message.Severity.INFO, Message.SuiteType.NONE, Message.SuiteKind.INFO, output));
+      Message.Severity.INFO, Message.SuiteType.STAY, Message.SuiteKind.INFO, output));
   }
 
   public static string EnumerableToString<T>(

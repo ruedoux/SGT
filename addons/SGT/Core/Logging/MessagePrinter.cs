@@ -3,12 +3,19 @@ using System.Collections.Generic;
 namespace SGT;
 
 /// <summary> 
-/// Converts a message flow into console friendly PrintOutput
+/// Converts a message flow into console friendly printFunction
 /// </summary>
 internal class MessagePrinter
 {
+  private static readonly Dictionary<Message.Severity, string> SeverityColorMap = new()
+  {
+    {Message.Severity.PASSED, "Lawngreen"},
+    {Message.Severity.FAILED, "Red"},
+    {Message.Severity.TIMEOUT, "Red"},
+    {Message.Severity.INFO, "Skyblue"}
+  };
+
   private readonly Action<string> printFunction;
-  private readonly Dictionary<Message.Severity, string> SeverityColorMap = new();
   private readonly bool addBBCode;
   private bool shouldBeTabbed = false; // switched on/off based on namespace
 
@@ -17,11 +24,6 @@ internal class MessagePrinter
   {
     this.printFunction = printFunction;
     this.addBBCode = addBBCode;
-
-    SeverityColorMap.Add(Message.Severity.PASSED, "Lawngreen");
-    SeverityColorMap.Add(Message.Severity.FAILED, "Red");
-    SeverityColorMap.Add(Message.Severity.TIMEOUT, "Red");
-    SeverityColorMap.Add(Message.Severity.INFO, "Skyblue");
   }
 
   public void Print(Message message)
@@ -29,50 +31,35 @@ internal class MessagePrinter
     if (message.suiteKind == Message.SuiteKind.NAMESPACE && message.suiteType == Message.SuiteType.END_SUITE)
       shouldBeTabbed = false;
 
-    if (message.suiteType == Message.SuiteType.NONE)
-    {
+    if (message.suiteType == Message.SuiteType.STAY)
       PrintBasedOnTab($"{GetLeftBar(message.suiteType, message.severity)} {message.GetInfo()} {message.GetTimeTook()}{message.GetDetails(true)}");
-    }
     else if (message.suiteType == Message.SuiteType.START_SUITE)
-      StartSuite(message);
+    {
+      PrintBasedOnTab($"{GetLeftBar(message.suiteType, message.severity)} Starting {message.suiteKind.ToString().ToLower()} {message.GetInfo()}");
+      if (message.suiteKind != Message.SuiteKind.CLASS)
+        printFunction("");
+    }
     else if (message.suiteType == Message.SuiteType.END_SUITE)
-      EndSuite(message);
+    {
+      if (message.suiteKind == Message.SuiteKind.CLASS)
+        PrintBasedOnTab($"{GetLeftBar(message.suiteType, message.severity)} Ending {message.suiteKind.ToString().ToLower()} {message.GetInfo()}");
+
+      PrintSummaryBlock(message);
+      printFunction("");
+    }
 
     if (message.suiteKind == Message.SuiteKind.NAMESPACE && message.suiteType == Message.SuiteType.START_SUITE)
       shouldBeTabbed = true;
   }
 
   private void PrintBasedOnTab(string message)
-  {
-    if (shouldBeTabbed)
-      PrintOutput($"\t {message}");
-    else
-      PrintOutput(message);
-  }
+    => printFunction(shouldBeTabbed ? $"\t {message}" : message);
 
-  private void StartSuite(Message message)
-  {
-    PrintBasedOnTab($"{GetLeftBar(message.suiteType, message.severity)} Starting {message.suiteKind.ToString().ToLower()} {message.GetInfo()}");
-    if (message.suiteKind != Message.SuiteKind.CLASS)
-    {
-      PrintOutput("");
-    }
-  }
-
-  private void EndSuite(Message message)
-  {
-    if (message.suiteKind == Message.SuiteKind.CLASS)
-    {
-      PrintBasedOnTab($"{GetLeftBar(message.suiteType, message.severity)} Ending {message.suiteKind.ToString().ToLower()} {message.GetInfo()}");
-    }
-    PrintSummaryBlock(message);
-    PrintOutput("");
-  }
 
   private void PrintSummaryBlock(Message message)
   {
     PrintBasedOnTab($"{GetLeftBar(message.suiteType, message.severity)}");
-    PrintBasedOnTab($"{GetLeftBar(Message.SuiteType.NONE, message.severity)} Summary of: {message.suiteKind.ToString().ToLower()} {message.GetInfo()}, took: {message.GetTimeTook()}");
+    PrintBasedOnTab($"{GetLeftBar(Message.SuiteType.STAY, message.severity)} Summary of: {message.suiteKind.ToString().ToLower()} {message.GetInfo()}, took: {message.GetTimeTook()}");
     PrintBasedOnTab($"{GetLeftBar(message.suiteType, message.severity)}");
   }
 
@@ -82,21 +69,19 @@ internal class MessagePrinter
     uint barSize = 8,
     char barFiller = '-')
   {
-    string PrintOutput = "";
+    string leftBar = "";
     if (suiteType == Message.SuiteType.START_SUITE || suiteType == Message.SuiteType.END_SUITE)
-      PrintOutput += '[' + CenterString("", barFiller, barSize) + ']';
+      leftBar += $"[{PadMiddle("", barFiller, barSize)}]";
     else
-      PrintOutput += '[' + CenterString(severity.ToString(), barFiller, barSize) + ']';
+      leftBar += $"[{PadMiddle(severity.ToString(), barFiller, barSize)}]";
 
-    if (addBBCode && SeverityColorMap.ContainsKey(severity) && suiteType == Message.SuiteType.NONE)
-    {
-      PrintOutput = AddBBCodeColor(PrintOutput, SeverityColorMap[severity]);
-    }
+    if (suiteType == Message.SuiteType.STAY && addBBCode)
+      leftBar = AddBBCodeColor(leftBar, SeverityColorMap[severity]);
 
-    return PrintOutput;
+    return leftBar;
   }
 
-  private string CenterString(string inputString, char filler, uint maxSize)
+  private string PadMiddle(string inputString, char filler, uint maxSize)
   {
     if (inputString.Length > maxSize)
       inputString = inputString[..(int)maxSize];
@@ -105,18 +90,9 @@ internal class MessagePrinter
     int leftSpaces = totalSpaces / 2;
     int rightSpaces = totalSpaces - leftSpaces;
 
-    return new string(filler, leftSpaces) + inputString + new string(filler, rightSpaces);
+    return $"{new string(filler, leftSpaces)}{inputString}{new string(filler, rightSpaces)}";
   }
 
-  private string AddBBCodeColor(string text, string color)
-  {
-    if (string.IsNullOrEmpty(color))
-      return text;
-    return $"[color={color}]{text}[/color]";
-  }
-
-  private void PrintOutput(string message)
-  {
-    printFunction(message);
-  }
+  private string AddBBCodeColor(string text, string color) =>
+    string.IsNullOrEmpty(color) ? text : $"[color={color}]{text}[/color]";
 }

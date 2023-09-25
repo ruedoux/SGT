@@ -11,7 +11,7 @@ internal partial class GodotTestRoot : Control
 
   public GodotTestRoot()
   {
-    logger.messageLogObservers.AddObservers(new MessagePrinter(GD.Print, false).Print);
+    logger.messageLogObservers.AddObservers(new MessagePrinter(GD.PrintRich, true).Print);
   }
 
   public void RunTestsInNamespaces(string[] namespaces)
@@ -34,7 +34,7 @@ internal partial class GodotTestRoot : Control
     ObjectSerializer.SaveToFile(Config.testResultsPath, logger.messageAgregator);
     logger.Log(new Message(
       Message.Severity.INFO,
-      Message.SuiteType.NONE,
+      Message.SuiteType.STAY,
       Message.SuiteKind.INFO,
       $"Saved test results to file: {Config.testResultsPath}"));
     testsFinished = true;

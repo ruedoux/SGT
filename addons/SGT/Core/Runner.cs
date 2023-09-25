@@ -26,7 +26,7 @@ internal class Runner : RunnerTemplate
     {
       logger.Log(new Message(
         Message.Severity.FAILED,
-        Message.SuiteType.NONE,
+        Message.SuiteType.STAY,
         Message.SuiteKind.INFO,
         ex.Message,
         -1,
@@ -126,7 +126,7 @@ internal class Runner : RunnerTemplate
       isPassed &= true;
       logger.Log(new Message(
         Message.Severity.PASSED,
-        Message.SuiteType.NONE,
+        Message.SuiteType.STAY,
         Message.SuiteKind.METHOD,
         thisMethod.Name,
         methodStopwatch.ElapsedMilliseconds));
@@ -136,7 +136,7 @@ internal class Runner : RunnerTemplate
       isPassed &= false;
       logger.Log(new Message(
         Message.Severity.TIMEOUT,
-        Message.SuiteType.NONE,
+        Message.SuiteType.STAY,
         Message.SuiteKind.METHOD,
         thisMethod.Name,
         methodStopwatch.ElapsedMilliseconds));
@@ -146,7 +146,7 @@ internal class Runner : RunnerTemplate
       isPassed &= false;
       logger.Log(new Message(
         Message.Severity.FAILED,
-        Message.SuiteType.NONE,
+        Message.SuiteType.STAY,
         Message.SuiteKind.METHOD,
         thisMethod.Name,
         methodStopwatch.ElapsedMilliseconds,
