@@ -1,4 +1,4 @@
-namespace PassingTests;
+namespace DefaultTests;
 using SGT;
 
 

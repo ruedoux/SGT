@@ -1,7 +1,7 @@
 using Godot;
 using SGT;
 
-namespace PassingTests;
+namespace DefaultTests;
 
 public class SceneTest : SimpleTestClass
 {
@@ -10,7 +10,7 @@ public class SceneTest : SimpleTestClass
   {
     // Given
     var loadedNode = LoadSceneInstance<TestNode>(
-      "res://Examples/Scenes/TestNode.tscn");
+      "res://Examples/Default/Scenes/TestNode.tscn");
 
     // When
     loadedNode.shouldBe10 = 123;
@@ -28,7 +28,7 @@ public class SceneTest : SimpleTestClass
   {
     // Given
     var loadedNode = LoadSceneInstance<TestNode>(
-      "res://Examples/Scenes/TestNode.tscn");
+      "res://Examples/Default/Scenes/TestNode.tscn");
 
     // When
     loadedNode.shouldBe10 = 123;

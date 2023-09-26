@@ -1,5 +1,5 @@
 // Testing a testing framework with the same testing framework for testing
-namespace PassingTests;
+namespace DefaultTests;
 using System;
 using SGT;
 

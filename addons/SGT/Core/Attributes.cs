@@ -32,9 +32,12 @@ public abstract class SimpleTestClass
 
   public T LoadSceneInstance<T>(string path) where T : class
   {
+    if (!FileAccess.FileExists(path))
+      throw new AssertionException("Provided scene does not exist, path: " + path);
+
     var scene = ResourceLoader.Load<PackedScene>(
       path, null, ResourceLoader.CacheMode.Replace);
-    return scene.InstantiateOrNull<T>();
+    return scene.Instantiate<T>(); // TODO: It has to be called deffered because it tends to break!
   }
 
   public void FailTest(string faileCause = "")
