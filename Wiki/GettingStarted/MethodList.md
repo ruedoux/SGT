@@ -1,6 +1,8 @@
 Method List
 ---
 
+`Page is work in progress`
+
 `!Important!`\
 **Test root** refers to a node which is anchor point of all tests and provides access to the scene tree``
 
@@ -12,17 +14,17 @@ Method List
 
 ### Utility
 
-[[CallTestRootDeffered](#CallTestRootDeffered), ]
+[[CallTestRootDeffered](#CallTestRootDeffered), [LoadSceneInstance](#LoadSceneInstance)]
 
 *All utility methods implementation can be found [here](https://github.com/RedouxG/SGT/blob/main/addons/SGT/Core/Attributes.cs)*
 
 ---
 
-<a name="CallTestRootDeffered">**CallTestRootDeffered**</a>\
-Calls deffered a method of a given string name with provided parameters for test root node.
+<a name="CallDeffered">**CallTestRootDeffered**</a>\
+Calls a given method in main thread for test root node.
 
 ```c#
-CallTestRootDeffered(Node.MethodName.AddChild, loadedNode);
+CallDeffered(Node.MethodName.AddChild, loadedNode);
 // Adds child to root test node. All nodes are cleared after the test method is finished
 ```
 

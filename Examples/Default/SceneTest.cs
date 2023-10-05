@@ -14,7 +14,7 @@ public class SceneTest : SimpleTestClass
 
     // When
     loadedNode.shouldBe10 = 123;
-    CallTestRootDeffered(Node.MethodName.AddChild, loadedNode);
+    CallDeferred(Node.MethodName.AddChild, loadedNode);
 
     // Then
     Assertions.AssertAwaitAtMost(5000, () =>
@@ -32,7 +32,7 @@ public class SceneTest : SimpleTestClass
 
     // When
     loadedNode.shouldBe10 = 123;
-    CallTestRootDeffered(Node.MethodName.AddChild, loadedNode);
+    CallDeferred(Node.MethodName.AddChild, loadedNode);
 
     // Then
     Assertions.AssertAwaitAtMost(5000, () =>

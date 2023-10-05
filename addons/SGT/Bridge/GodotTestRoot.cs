@@ -1,32 +1,26 @@
 namespace SGT;
 
-using System.Threading.Tasks;
 using Godot;
 
 internal partial class GodotTestRoot : Control
 {
   internal Logger logger = new();
-  internal bool testsFinished = false;
-  internal bool testsStarted = false;
+  internal bool testsFinished = true;
 
   public GodotTestRoot()
   {
     logger.messageLogObservers.AddObservers(new MessagePrinter(GD.PrintRich, true).Print);
   }
 
-  public void RunTestsInNamespaces(string[] namespaces)
+  public Runner RunTestsInNamespaces(string[] namespaces)
   {
-    Runner runner = new(this, logger, namespaces);
-    Task.Run(() => runner.Run());
-    testsStarted = true;
-  }
+    if (!testsFinished)
+      return null;
 
-  public void DeleteAllChildren()
-  {
-    foreach (Node child in GetChildren())
-    {
-      child.QueueFree();
-    }
+    Runner runner = new(this, logger, namespaces);
+    runner.Run();
+    testsFinished = false;
+    return runner;
   }
 
   internal void FinalizeTest()
@@ -38,5 +32,11 @@ internal partial class GodotTestRoot : Control
       Message.SuiteKind.INFO,
       $"Saved test results to file: {Config.testResultsPath}"));
     testsFinished = true;
+  }
+
+  public void FreeAllChildren()
+  {
+    foreach (var child in GetChildren())
+      child.QueueFree();
   }
 }

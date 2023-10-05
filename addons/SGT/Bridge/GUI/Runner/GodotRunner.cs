@@ -45,7 +45,7 @@ internal partial class GodotRunner : CanvasLayer
 
   private void RunTests(string[] namespaces)
   {
-    if (!godotTestRoot.testsFinished && godotTestRoot.testsStarted)
+    if (!godotTestRoot.testsFinished)
       return;
 
     godotTestRoot.QueueFree();

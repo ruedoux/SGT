@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SGT;
 
-internal class Runner : RunnerTemplate
+public class Runner : RunnerTemplate
 {
   private readonly string[] namespaces;
 
@@ -16,26 +16,29 @@ internal class Runner : RunnerTemplate
     this.namespaces = namespaces;
   }
 
-  public override bool Run()
+  public Task<bool> Run()
   {
-    try
+    return Task.Run(() =>
     {
-      return RunAllNamespaces();
-    }
-    catch (Exception ex)
-    {
-      logger.Log(new Message(
-        Message.Severity.FAILED,
-        Message.SuiteType.STAY,
-        Message.SuiteKind.INFO,
-        ex.Message,
-        -1,
-        ex.StackTrace));
-    }
-    return false;
+      try
+      {
+        return RunAllNamespaces();
+      }
+      catch (Exception ex)
+      {
+        logger.Log(new Message(
+            Message.Severity.FAILED,
+            Message.SuiteType.STAY,
+            Message.SuiteKind.INFO,
+            ex.Message,
+            -1,
+            ex.StackTrace));
+      }
+      return false;
+    });
   }
 
-  public bool RunAllNamespaces()
+  private bool RunAllNamespaces()
   {
     var namespacesOk = AssemblyExtractor.ContainsExistingNamespaces(namespaces);
     if (!namespacesOk.Item1)
@@ -98,6 +101,7 @@ internal class Runner : RunnerTemplate
       foreach (var method in simpleTestMethods)
       {
         isPassed &= RunMethod(method, allMethods, testObject);
+        testObject.FreeChildNodes();
       }
       return isPassed;
     });
@@ -120,7 +124,6 @@ internal class Runner : RunnerTemplate
         RunHelperMethod<SimpleBeforeEach>(allMethods, testObject);
         RunAsyncTestMethod(thisMethod, testObject).GetAwaiter().GetResult();
         RunHelperMethod<SimpleAfterEach>(allMethods, testObject);
-        testObject.CleanUpTestRootChildNodes();
       }
       RunHelperMethod<SimpleAfterAll>(allMethods, testObject);
       isPassed &= true;

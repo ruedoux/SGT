@@ -2,19 +2,18 @@ namespace SGT;
 
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
-internal abstract class RunnerTemplate
+public abstract class RunnerTemplate
 {
-  public readonly GodotTestRoot godotTestRoot;
-  protected Logger logger;
+  internal readonly GodotTestRoot godotTestRoot;
+  internal Logger logger;
 
-  public RunnerTemplate(GodotTestRoot godotTestRoot, Logger logger)
+  internal RunnerTemplate(GodotTestRoot godotTestRoot, Logger logger)
   {
     this.godotTestRoot = godotTestRoot;
     this.logger = logger;
   }
-
-  public abstract bool Run();
 
   protected bool RunSuiteWithLog(
     string name, Message.SuiteKind suiteKind, Func<bool> action)
