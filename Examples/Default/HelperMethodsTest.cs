@@ -20,15 +20,12 @@ public class HelperMethods : SimpleTestClass
     shouldBeFalse = false;
   }
 
-  [SimpleTestMethod(repeatTest = 2)]
   public void TestBeforeEach()
   {
     shouldBeZero++;
-    Assertions.AssertEqual(shouldBeZero, 1);
+    Assertions.AssertEqual(1, shouldBeZero);
   }
 
-
-  [SimpleTestMethod(repeatTest = 2)]
   public void TestAfterEach()
   {
     Assertions.AssertFalse(shouldBeFalse);

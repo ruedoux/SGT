@@ -98,11 +98,16 @@ public class Runner : RunnerTemplate
     bool isPassed = true;
     isPassed &= RunSuiteWithLog(testObject.GetType().Name, Message.SuiteKind.CLASS, () =>
     {
+      RunHelperMethod<SimpleBeforeAll>(allMethods, testObject);
       foreach (var method in simpleTestMethods)
       {
+        RunHelperMethod<SimpleBeforeEach>(allMethods, testObject);
         isPassed &= RunMethod(method, allMethods, testObject);
+        RunHelperMethod<SimpleAfterEach>(allMethods, testObject);
+
         testObject.FreeChildNodes();
       }
+      RunHelperMethod<SimpleAfterAll>(allMethods, testObject);
       return isPassed;
     });
 
@@ -118,14 +123,9 @@ public class Runner : RunnerTemplate
     var testRepeats = thisMethod.GetCustomAttribute<SimpleTestMethod>().repeatTest;
     try
     {
-      RunHelperMethod<SimpleBeforeAll>(allMethods, testObject);
       for (uint i = 0; i < testRepeats; i++)
-      {
-        RunHelperMethod<SimpleBeforeEach>(allMethods, testObject);
         RunAsyncTestMethod(thisMethod, testObject).GetAwaiter().GetResult();
-        RunHelperMethod<SimpleAfterEach>(allMethods, testObject);
-      }
-      RunHelperMethod<SimpleAfterAll>(allMethods, testObject);
+
       isPassed &= true;
       logger.Log(new Message(
         Message.Severity.PASSED,
